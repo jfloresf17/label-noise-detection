@@ -1,0 +1,2 @@
+# Noisy-Student
+ Kaggle competition
