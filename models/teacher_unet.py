@@ -2,6 +2,7 @@ import torch
 import torchmetrics
 import pytorch_lightning as pl
 import segmentation_models_pytorch as smp
+import wandb
 
 ## Define the teacher model
 class TeacherUNetModel(pl.LightningModule):
@@ -71,11 +72,29 @@ class TeacherUNetModel(pl.LightningModule):
         recall = self.val_recall(outputs, labels)
         iou = self.val_iou(outputs, labels)
         f1 = self.val_f1(outputs, labels)
-        self.log('val_precision', precision)
-        self.log('val_recall', recall)
-        self.log('val_iou', iou)
-        self.log('val_f1', f1)
-        self.log('val_loss', ce_loss)
+        self.log('val_precision', precision, sync_dist=True)
+        self.log('val_recall', recall, sync_dist=True)
+        self.log('val_iou', iou, sync_dist=True)
+        self.log('val_f1', f1, sync_dist=True)
+        self.log('val_loss', ce_loss, sync_dist=True)
+
+        # Logging the first images of the batch
+        if self.current_epoch % 5 == 0:  # Logging every 5 epochs
+            images = images.permute(0, 2, 3, 1)
+
+            self.logger.experiment.log({
+                "image": wandb.Image(images[0].cpu().detach().numpy()*255, masks={ 
+                    "predictions": {
+                        "mask_data": outputs[0][0].cpu().detach().numpy()*255,
+                        "class_labels": {0: "background", 1: "building"}
+                    },
+                    "ground_truth": {
+                        "mask_data": labels[0][0].cpu().detach().numpy(),
+                        "class_labels": {0: "background", 1: "building"}
+                    }
+                })
+            })
+
         return {'loss': ce_loss}
     
     def test_step(self, batch, batch_idx):
@@ -90,11 +109,11 @@ class TeacherUNetModel(pl.LightningModule):
         recall = self.test_recall(outputs, labels)
         iou = self.test_iou(outputs, labels)
         f1 = self.test_f1(outputs, labels)
-        self.log('test_precision', precision)
-        self.log('test_recall', recall)
-        self.log('test_iou', iou)
-        self.log('test_f1', f1)
-        self.log('test_loss', ce_loss)     
+        self.log('test_precision', precision, sync_dist=True)
+        self.log('test_recall', recall, sync_dist=True)
+        self.log('test_iou', iou, sync_dist=True)
+        self.log('test_f1', f1, sync_dist=True)
+        self.log('test_loss', ce_loss, sync_dist=True)
         return {'loss': ce_loss}
     
     def configure_optimizers(self):

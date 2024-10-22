@@ -7,40 +7,42 @@ device: "cuda"  # Use "cuda" for GPU or "cpu" for CPU
 data:
   batch_size: 16
   num_workers: 16  
-  whu_path: "/media/tidop/Datos_4TB/databases/whu_resized"
+  whu_path: "/media/tidop/Datos_4TB/databases/whu"
   datacentric_image_path: "/media/tidop/Datos_4TB/databases/kaggle/dataset/training_patches"
   label_noisy_path: "/media/tidop/Datos_4TB/databases/kaggle/dataset/training_noisy_labels"
   teacher_output_path: "/media/tidop/Datos_4TB/databases/kaggle/dataset/teacher_outputs"
 
 # Data transformations
 Normalize: 
-  apply: False
+  apply: True
   WHU:
-    mean: [105.7880169 , 114.63701386, 112.91447218]  # Normalization for RGB images
-    std: [44.28023448, 41.85581294, 45.13255112]
+    # mean: [105.7880169 , 114.63701386, 112.91447218]  # Only training
+    # std: [44.28023448, 41.85581294, 45.13255112]
+    mean: [105.34253814, 114.2284708 , 112.52936415]  # Include test and validation
+    std: [42.12451161, 39.52149692, 42.81161886]
   DataCentric:
     mean: [72.74413315, 99.76137101, 82.70024275]  # Normalization for RGB images
     std: [36.28290664, 34.82507359, 41.48902725]
 
 # Teacher Model configuration
 teacher_model:
-  encoder_name: "resnet50"  # Encoder backbone
+  encoder_name: "resnet34"  # Encoder backbone
   encoder_weights: "imagenet"  # Pre-trained weights
   in_channels: 3  # RGB image
   out_channels: 1  # Number of classes for segmentation
   learning_rate: 1e-3
   checkpoint_dir: "checkpoints/"
-  checkpoint_name: "best_teacher_notnorm"
+  checkpoint_name: "best_teacher"
 
 # Student Model configuration
 student_model:
-  encoder_name: "resnet50"  # Lighter encoder
+  encoder_name: "resnet34"  # Lighter encoder
   encoder_weights: null  # Train from scratch
   in_channels: 3  # RGB image
   out_channels: 1  
   learning_rate: 1e-4
   checkpoint_dir: "checkpoints/"
-  checkpoint_name: "best_student_notnorm"
+  checkpoint_name: "best_student"
 
 # Knowledge distillation parameters
 knowledge_distillation:
@@ -51,7 +53,7 @@ knowledge_distillation:
 # Training parameters
 trainer:
   wandb_project: "teacher_student"  # Name of the Weights & Biases project
-  experiment_name: "student_model_notnorm"  # Name of the experiment
+  experiment_name: "teacher_model"  # Name of the experiment
   strategy: "ddp"  # Distributed Data Parallel
   accelerator: "gpu"  # Distributed Data Parallel
   precision: "16-mixed"  # Mixed precision training

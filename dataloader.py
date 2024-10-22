@@ -1,40 +1,54 @@
 import torch
+import torchvision.transforms as transforms
 from torch.utils.data import DataLoader, Dataset
-import pathlib
 import pytorch_lightning as pl
-import numpy as np
 import cv2
-from utils import load_yaml
+from PIL import Image
 from sklearn.model_selection import train_test_split
+import torch.nn.functional as F
 
-# Here we define the datasets and dataloaders for the teacher and student models
 class TeacherDataset(Dataset):
-    def __init__(self, image_paths, label_paths, normalize=False, mean=None, std=None):
+    def __init__(self, image_paths, label_paths, normalize, mean=None, std=None):
         self.image_paths = image_paths
         self.label_paths = label_paths
         self.normalize = normalize
         self.mean = mean
         self.std = std
 
+        # Define a transformation pipeline for the image
+        self.image_transforms = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Resize((256, 256), interpolation=transforms.InterpolationMode.BILINEAR, antialias=True),
+        ])
+
+        # Define a transformation pipeline for the label (no normalization required)
+        self.label_transforms = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Resize((256, 256), interpolation=transforms.InterpolationMode.NEAREST, antialias=True),
+        ])
+
+        # Add normalization if requested
+        if self.normalize:
+            self.image_transforms.transforms.append(
+                transforms.Normalize(mean=self.mean, std=self.std)  # Normalize image
+            )
+
     def __len__(self):
         return len(self.image_paths)
 
     def __getitem__(self, idx):
-        image =  cv2.imread(str(self.image_paths[idx]), cv2.IMREAD_COLOR)
+        # Read image and label using cv2
+        image = cv2.imread(str(self.image_paths[idx]), cv2.IMREAD_COLOR)
         label = cv2.imread(str(self.label_paths[idx]), cv2.IMREAD_GRAYSCALE)
 
-        ## Convert to tensor
-        image = torch.tensor(image, dtype=torch.float).permute(2, 0, 1)
-        label = torch.tensor(label, dtype=torch.float).unsqueeze(0)
+        # Convert the images to float
+        image = image.astype(float)
+        label = label.astype(float) / 255.0
 
-        if self.normalize:
-            ## Normalize the image
-            mean_tensor = torch.tensor(self.mean, dtype=torch.float32).view(-1, 1, 1)
-            std_tensor = torch.tensor(self.std, dtype=torch.float32).view(-1, 1, 1)
+        # Apply the transformations
+        image = self.image_transforms(image).float()
+        label = self.label_transforms(label).float()  # Apply label transformations (resize, tensor)
 
-            image = (image - mean_tensor) / std_tensor
-        
-    
         return image, label
     
 class WHUDataModule(pl.LightningDataModule):
@@ -92,11 +106,9 @@ class WHUDataModule(pl.LightningDataModule):
                           num_workers=self.num_workers, 
                           shuffle=False)
     
-
 class StudentDataset(Dataset):
     def __init__(self, image_paths, label_paths, teacher_output_paths, 
-                 normalize=False, mean=None, std=None):
-        
+                 normalize, mean=None, std=None):
         self.image_paths = image_paths
         self.label_paths = label_paths
         self.teacher_output_paths = teacher_output_paths
@@ -104,27 +116,33 @@ class StudentDataset(Dataset):
         self.mean = mean
         self.std = std
 
+        # Define the preprocessing pipeline
+        self.preprocess_pipeline = transforms.Compose([
+            transforms.ToTensor(),  # Convert images to tensor 
+        ])
+
+        # If normalization is required, add it to the pipeline
+        if self.normalize and self.mean is not None and self.std is not None:
+            self.preprocess_pipeline.transforms.append(
+                transforms.Normalize(mean=self.mean, std=self.std)  # Normalize images to [0, 1]
+            )
+
     def __len__(self):
         return len(self.image_paths)
 
     def __getitem__(self, idx):
-        image = cv2.imread(str(self.image_paths[idx]), cv2.IMREAD_COLOR)
-        label = cv2.imread(str(self.label_paths[idx]), cv2.IMREAD_GRAYSCALE)
-        teacher_output = cv2.imread(str(self.teacher_output_paths[idx]), cv2.IMREAD_GRAYSCALE) 
-        
-        ## Convert to tensor
-        image = torch.tensor(image, dtype=torch.float).permute(2, 0, 1)
-        label = torch.tensor(label, dtype=torch.float).unsqueeze(0)
+        # Load images
+        image = Image.open(str(self.image_paths[idx]))
+        label = Image.open(str(self.label_paths[idx]))
+        teacher_output = Image.open(str(self.teacher_output_paths[idx]))
+
+        # Apply preprocessing pipeline
+        image = self.preprocess_pipeline(image)
+        label = torch.tensor(label, dtype=torch.float).unsqueeze(0) 
         teacher_output = torch.tensor(teacher_output, dtype=torch.float).unsqueeze(0)
 
-        if self.normalize:
-            ## Normalize the image
-            mean_tensor = torch.tensor(self.mean, dtype=torch.float32).view(-1, 1, 1)
-            std_tensor = torch.tensor(self.std, dtype=torch.float32).view(-1, 1, 1)
-
-            image = (image - mean_tensor) / std_tensor
-
         return image, label, teacher_output
+
     
 class DataCentricDataModule(pl.LightningDataModule):
     def __init__(self, input_files, label_files, teacher_output_files, normalize,
@@ -140,6 +158,9 @@ class DataCentricDataModule(pl.LightningDataModule):
         self.num_workers = num_workers
 
     def setup(self, stage=None):
+        ## Set the seed for reproducibility
+        torch.manual_seed(42)
+
         ## Zip the input, label and teacher output files
         files = list(zip(self.input_files, self.label_files, self.teacher_output_files))
 

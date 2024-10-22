@@ -8,6 +8,9 @@ from dataloader import WHUDataModule, DataCentricDataModule
 import typer
 from utils import load_yaml
 
+# Check if GPU is available, and if not, use the CPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 # Training Teacher Model
 def train_teacher(config):
     # Initialize teacher model
