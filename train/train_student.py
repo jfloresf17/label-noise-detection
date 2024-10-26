@@ -202,4 +202,4 @@ if __name__ == "__main__":
     typer.run(student_teacher)
 
 # To run the training script as a command line application in the background, use the following command:
-# nohup python train_student.py config.yaml > student_training.log 2>&1 &
+# nohup python train_student.py config.yaml > logs/student_training.log 2>&1 &
