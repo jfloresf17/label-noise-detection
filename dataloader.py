@@ -1,11 +1,10 @@
-import torch
-import torchvision.transforms as transforms
-from torch.utils.data import DataLoader, Dataset
-import pytorch_lightning as pl
 import cv2
-from PIL import Image
+import pytorch_lightning as pl
+import pathlib
+import torch
+from torch.utils.data import Dataset, DataLoader
+from torchvision import transforms
 from sklearn.model_selection import train_test_split
-import torch.nn.functional as F
 
 class TeacherDataset(Dataset):
     def __init__(self, image_paths, label_paths, normalize, mean=None, std=None):
@@ -54,7 +53,7 @@ class TeacherDataset(Dataset):
 class WHUDataModule(pl.LightningDataModule):
     def __init__(self, file_paths, normalize, mean, std, batch_size=32, num_workers=4):
         super().__init__()
-        self.file_paths = file_paths
+        self.file_paths = pathlib.Path(file_paths)
         self.normalize = normalize
         self.mean = mean
         self.std = std
@@ -106,24 +105,29 @@ class WHUDataModule(pl.LightningDataModule):
                           num_workers=self.num_workers, 
                           shuffle=False)
     
+
 class StudentDataset(Dataset):
-    def __init__(self, image_paths, label_paths, teacher_output_paths, 
+    def __init__(self, image_paths, label_paths, 
                  normalize, mean=None, std=None):
         self.image_paths = image_paths
         self.label_paths = label_paths
-        self.teacher_output_paths = teacher_output_paths
         self.normalize = normalize
         self.mean = mean
         self.std = std
 
         # Define the preprocessing pipeline
-        self.preprocess_pipeline = transforms.Compose([
+        self.image_preprocess_pipeline = transforms.Compose([
             transforms.ToTensor(),  # Convert images to tensor 
         ])
 
+        # Define the label preprocessing pipeline
+        self.label_preprocess_pipeline = transforms.Compose([
+            transforms.ToTensor(),  # Convert labels to tensor
+        ])        
+
         # If normalization is required, add it to the pipeline
         if self.normalize and self.mean is not None and self.std is not None:
-            self.preprocess_pipeline.transforms.append(
+            self.image_preprocess_pipeline.transforms.append(
                 transforms.Normalize(mean=self.mean, std=self.std)  # Normalize images to [0, 1]
             )
 
@@ -132,25 +136,25 @@ class StudentDataset(Dataset):
 
     def __getitem__(self, idx):
         # Load images
-        image = Image.open(str(self.image_paths[idx]))
-        label = Image.open(str(self.label_paths[idx]))
-        teacher_output = Image.open(str(self.teacher_output_paths[idx]))
+        image = cv2.imread(str(self.image_paths[idx]), cv2.IMREAD_COLOR)
+        label = cv2.imread(str(self.label_paths[idx]), cv2.IMREAD_GRAYSCALE)
+
+        image = image.astype(float)
+        label = label.astype(float)
 
         # Apply preprocessing pipeline
-        image = self.preprocess_pipeline(image)
-        label = torch.tensor(label, dtype=torch.float).unsqueeze(0) 
-        teacher_output = torch.tensor(teacher_output, dtype=torch.float).unsqueeze(0)
+        image = self.image_preprocess_pipeline(image).float()
+        label = self.label_preprocess_pipeline(label).float()
 
-        return image, label, teacher_output
+        return image, label
 
-    
+
 class DataCentricDataModule(pl.LightningDataModule):
-    def __init__(self, input_files, label_files, teacher_output_files, normalize,
+    def __init__(self, input_files, label_files, normalize,
                  mean, std, batch_size=32, num_workers=4):
         super().__init__()
         self.input_files = input_files
         self.label_files = label_files
-        self.teacher_output_files = teacher_output_files
         self.normalize = normalize
         self.mean = mean
         self.std = std
@@ -162,31 +166,27 @@ class DataCentricDataModule(pl.LightningDataModule):
         torch.manual_seed(42)
 
         ## Zip the input, label and teacher output files
-        files = list(zip(self.input_files, self.label_files, self.teacher_output_files))
+        files = list(zip(self.input_files, self.label_files))
 
         ## Split the dataset using sklearn
         ttrain_files, test_files = train_test_split(files, test_size=0.2, random_state=42)
         train_files, val_files = train_test_split(ttrain_files, test_size=0.2, random_state=42)
 
         ## Unzip the files
-        train_input_files, train_label_files, train_teacher_files = zip(*train_files)
-        val_input_files, val_label_files, val_teacher_files = zip(*val_files)
-        test_input_files, test_label_files, test_teacher_files = zip(*test_files)
+        train_input_files, train_label_files = zip(*train_files)
+        val_input_files, val_label_files = zip(*val_files)
+        test_input_files, test_label_files = zip(*test_files)
 
-   
         if stage == 'fit' or stage is None:
             self.train_dataset = StudentDataset(train_input_files, train_label_files, 
-                                                train_teacher_files, self.normalize,
-                                                self.mean, self.std)
+                                                self.normalize, self.mean, self.std)
             
             self.val_dataset = StudentDataset(val_input_files, val_label_files,
-                                              val_teacher_files, self.normalize,
-                                              self.mean, self.std)
+                                              self.normalize, self.mean, self.std)
         
         if stage == 'test' or stage == 'predict':
             self.test_dataset = StudentDataset(test_input_files, test_label_files,
-                                               test_teacher_files, self.normalize,
-                                               self.mean, self.std)
+                                               self.normalize, self.mean, self.std)
         
     def train_dataloader(self):
         return DataLoader(self.train_dataset, 
