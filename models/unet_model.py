@@ -1,7 +1,7 @@
 """ Full assembly of the parts to form the complete network """
 
 import torch.nn as nn
-from unet_parts import DoubleConv, Down, Up, OutConv
+from models.unet_parts import DoubleConv, Down, Up, OutConv
 
 class UNetTeacher(nn.Module):
     def __init__(self, n_channels, n_classes):

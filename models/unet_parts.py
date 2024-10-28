@@ -38,12 +38,31 @@ class Down(nn.Module):
 
 class Attention(nn.Module):
     """Attention Layer"""
-    def __init__(self, **params):
+    def __init__(self, x1_channels, x2_channels):
         super().__init__()
-        self.attention = nn.Identity(**params)
+        # Convolutions to reduce channels of x1 and x2
+        self.x1_conv = nn.Conv2d(x1_channels, x2_channels, kernel_size=1)
+        self.x2_conv = nn.Conv2d(x2_channels, x2_channels, kernel_size=1)
 
-    def forward(self, x):
-        return self.attention(x)
+        # Psi layer (1x1 convolution) followed by sigmoid
+        self.psi = nn.Conv2d(x2_channels, 1, kernel_size=1)
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x1, x2):
+            # Apply convolution to reduce channels
+            g1 = self.x1_conv(x1)  # Transform x1
+            x2_ = self.x2_conv(x2)  # Transform x2
+            
+            # Add them and apply ReLU activation
+            attention = F.relu(g1 + x2_)
+            
+            # Apply psi (1x1 convolution) and sigmoid
+            psi = self.psi(attention)
+            attention = self.sigmoid(psi)
+            
+            # Multiply the attention map with x2 (element-wise)
+            x2 = x2 * attention
+            return x2
     
 
 class Up(nn.Module):
@@ -51,15 +70,15 @@ class Up(nn.Module):
 
     def __init__(self, in_channels, out_channels):
         super().__init__()
+        self.up = nn.ConvTranspose2d(in_channels , in_channels, kernel_size=2, stride=2)
         self.conv = DoubleConv(in_channels + out_channels, out_channels)
-        self.attention = Attention()
-
+        self.attention = Attention(in_channels, out_channels)
+        
     def forward(self, x1, x2):
-        x1 = F.interpolate(x1, scale_factor=2, mode='bilinear', align_corners=True) ## As contrary to maxpooling
+        x1 = self.up(x1)
+        x2 = self.attention(x1, x2)
         x = torch.cat([x2, x1], dim=1)
-        x = self.attention(x)
         x = self.conv(x)
-        x = self.attention(x)
         return x
     
 

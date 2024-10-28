@@ -17,6 +17,39 @@ def iou(pred, target, threshold=0.5):
     iou = intersection / union
     return iou
 
+def weighted_iou(pred, target, weight_factor=0.1, epsilon=1e-6):
+    """
+    Calcula el Weighted IoU (WIoU) entre una predicción y un target.
+    Se penalizan las diferencias entre pred y target, ponderadas por un factor.
+
+    Parámetros:
+    - pred: Tensor de etiquetas ruidosas.
+    - target: Tensor de etiquetas reales.
+    - threshold: Umbral para convertir las predicciones en binario.
+    - weight_factor: Factor de ponderación para penalizar el ruido.
+    - epsilon: Constante para evitar divisiones por cero en el caso de unión cero.
+
+    Retorno:
+    - wiou: Weighted IoU entre pred y target.
+    """
+    # Convertimos pred en binario con el umbral y target 
+    pred = pred.float()
+    target = target.float()
+    
+    # Calculamos la intersección y la unión
+    intersection = (pred * target).sum()
+    union = pred.sum() + target.sum() - intersection
+    
+    # Calculamos la diferencia entre pred y target
+    difference = torch.abs(pred - target).sum()
+    
+    # Aplicamos epsilon en el denominador para evitar división por cero
+    iou = intersection / (union + epsilon)
+    
+    # Aplicamos la penalización por la diferencia
+    wiou = iou - (weight_factor * difference / (union + epsilon))    
+   
+    return wiou
 
 def dice_coefficient(pred, target, threshold=0.5):
     """

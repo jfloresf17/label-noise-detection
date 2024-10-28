@@ -1,19 +1,16 @@
 import torch
 import torch.nn as nn
+import random
 import torch.optim as optim
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 import wandb
 import typer
-import yaml
 
 # Import the UNetTeacher and WHUDataModule classes
+from utils import load_config
 from models.unet_model import UNetTeacher
 from dataloader import WHUDataModule
 from scores import iou, dice_coefficient, precision, recall, f1_score
-
-def load_config(config_path: str):
-    with open(config_path, 'r') as file:
-        config = yaml.safe_load(file)
-    return config
 
 def train_teacher(config_path: str):
     # Load configuration from YAML file
@@ -30,8 +27,8 @@ def train_teacher(config_path: str):
     device = config["device"]
 
     # Initialize Weights & Biases
-    wandb.init(project=config["wandb_project"], config=config, 
-               name=config["experiment_name"])
+    wandb.init(project=config["trainer"]["wandb_project"], config=config, 
+               name=config["trainer"]["experiment_name"])
 
     # Define the Teacher model
     teacher = UNetTeacher(n_channels=3, n_classes=1)
@@ -40,6 +37,11 @@ def train_teacher(config_path: str):
     # Define the optimizer and loss function
     optimizer = optim.Adam(teacher.parameters(), lr=lr)
     criterion = nn.BCEWithLogitsLoss().to(device)  # For binary segmentation, we use Binary Cross Entropy with Logits
+    scheduler = ReduceLROnPlateau(optimizer, # Reduce learning rate when a val loss metric has stopped improving 
+                                  mode='min', # Minimize the loss
+                                  factor=0.5, # Reduce the learning rate by half 
+                                  patience=3 # Number of epochs with no improvement after which learning rate will be reduced 
+                                  )
 
     # Create the data module
     data_module = WHUDataModule(file_paths, normalize, mean, std, batch_size=batch_size, num_workers=num_workers)
@@ -66,7 +68,7 @@ def train_teacher(config_path: str):
             optimizer.zero_grad()
 
             # Forward pass
-            outputs = teacher(images)
+            outputs, _ = teacher(images)
             loss = criterion(outputs, masks)
 
             # Backward pass and optimization
@@ -88,16 +90,6 @@ def train_teacher(config_path: str):
             running_recall += batch_recall.item()
             running_f1 += batch_f1.item()
 
-            # Log results to WandB
-            wandb.log(data={
-                "Batch Loss": loss.item(),
-                "Batch IoU": batch_iou.item(),
-                "Batch Dice": batch_dice.item(),
-                "Batch Precision": batch_precision.item(),
-                "Batch Recall": batch_recall.item(),
-                "Batch F1": batch_f1.item()
-            }, step=epoch * len(train_loader) + len(train_loader))
-
         # Calculate average loss per epoch
         epoch_loss = running_loss / len(train_loader)
         epoch_iou = running_iou / len(train_loader)
@@ -110,12 +102,12 @@ def train_teacher(config_path: str):
 
         # Log epoch metrics to WandB
         wandb.log({
-            "Epoch Loss": epoch_loss,
-            "Epoch IoU": epoch_iou,
-            "Epoch Dice": epoch_dice,
-            "Epoch Precision": epoch_precision,
-            "Epoch Recall": epoch_recall,
-            "Epoch F1": epoch_f1
+            "Train Loss": epoch_loss,
+            "Train IoU": epoch_iou,
+            "Train Dice": epoch_dice,
+            "Train Precision": epoch_precision,
+            "Train Recall": epoch_recall,
+            "Train F1": epoch_f1
         })
 
         # Validation after each epoch
@@ -130,7 +122,7 @@ def train_teacher(config_path: str):
         with torch.no_grad():
             for images, masks in val_loader:
                 images, masks = images.to(device), masks.to(device)
-                outputs = teacher(images)
+                outputs, _ = teacher(images)
                 loss = criterion(outputs, masks)
 
                 val_loss += loss.item()
@@ -166,6 +158,43 @@ def train_teacher(config_path: str):
             "Validation F1": val_f1
         })
 
+        if (epoch + 1) % 5 == 0:
+            with torch.no_grad():
+                # Obtén un lote de validación y pasa las imágenes por el modelo
+                sample_images, sample_masks = next(iter(val_loader))
+                sample_images, sample_masks = sample_images.to(device), sample_masks.to(device)
+                sample_outputs, _ = teacher(sample_images)
+                sample_outputs = torch.sigmoid(sample_outputs)  # Convertir logits a probabilidades
+                sample_outputs = (sample_outputs > 0.5).float()  # Binarizar predicciones
+
+                # Seleccionar una imagen aleatoria del lote
+                random_index = random.randint(0, sample_images.size(0) - 1)
+                
+                wandb.log({
+                            "Validation Example": wandb.Image(
+                                sample_images[random_index].cpu(), 
+                                caption="Image Example WHU",
+                                masks={
+                                    "predictions": {
+                                        "mask_data": sample_outputs[random_index][0].cpu().numpy(),
+                                        "class_labels": {0: "no building", 1: "building"}
+                                    },
+                                    "ground_truth": {
+                                        "mask_data": sample_masks[random_index][0].cpu().numpy(),
+                                        "class_labels": {0: "no building", 1: "building"}
+                                    }
+                                }
+                            )
+                        })
+                
+        # Adjust learning rate based on validation loss
+        current_lr = optimizer.param_groups[0]['lr']
+        scheduler.step(val_loss)
+        new_lr = optimizer.param_groups[0]['lr']
+        
+        if new_lr != current_lr:
+            print(f"Learning rate changed to {new_lr}")
+
         # Switch back to training mode
         teacher.train()
 
@@ -180,3 +209,10 @@ if __name__ == "__main__":
 
 # To run the training script as a command line application in the background, use the following command:
 # nohup python train_teacher.py config.yaml > logs/teacher_training.log 2>&1 &
+
+## Cambiar los pesos de perdida
+## Modificar las capas (agregar capas de convolución, atención)
+## Modificar el optimizador y tasa de aprendizaje (callback de reducción de tasa de aprendizaje)
+## WHU, LEVIR y CD (3 datasets): https://github.com/likyoo/open-cd
+## Añadir imagenes al log de wandb
+

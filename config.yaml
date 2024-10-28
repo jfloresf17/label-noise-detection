@@ -34,8 +34,8 @@ knowledge_distillation:
 
 # Training parameters
 trainer:
-  wandb_project: "UNet-Teacher-Training"  # Name of the Weights & Biases project
-  experiment_name: "Student-Teacher Training"  # Name of the experiment
+  wandb_project: "UNet-Attention-Teacher-Student-Training"  # Name of the Weights & Biases project
+  experiment_name: "Student Training"  # Name of the experiment
   max_epochs: 20  # Maximum number of epochs
 
 

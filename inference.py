@@ -27,7 +27,9 @@ def preprocess_image_for_inference(image_path, normalize=False, mean=None, std=N
 def inference_student(checkpoint_path, normalize, mean, std, path_to_image, threshold, output_path):
     # Load the Student model
     student = UNetStudent(n_channels=3, n_classes=1)
-    student.load_state_dict(torch.load(checkpoint_path))
+    checkpoint = torch.load(checkpoint_path)
+    filter_ckpt = {k: v for k, v in checkpoint.items()}
+    student.load_state_dict(filter_ckpt)
     student = student.cuda()
     student.eval()
 
@@ -65,3 +67,45 @@ std = [36.28290664, 34.82507359, 41.48902725]
 for i, image_file in enumerate(image_files):
     inference_student(checkpoint_path, normalize, mean, std, image_file, threshold, output_path)
     print(f"Processed image {i+1}/{len(image_files)}")
+
+## Apply IoU
+from scores import weighted_iou as wiou
+import torch
+import cv2
+import pathlib
+import numpy as np
+import pandas as pd
+
+label_path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/training_noisy_labels"
+output_path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/output"
+noisy_files = sorted(list(pathlib.Path(label_path).glob("*.png")))
+pred_files = sorted(list(pathlib.Path(output_path).glob("*.png")))
+
+noise_scores = []
+for i, (noisy, pred) in enumerate(zip(noisy_files, pred_files)):
+    filename = noisy.name
+    noisy_image = cv2.imread(str(noisy), cv2.IMREAD_GRAYSCALE)
+    pred_image = cv2.imread(str(pred), cv2.IMREAD_GRAYSCALE)
+
+    ## Flatten the images
+    noisy_image = torch.from_numpy(noisy_image)
+    pred_image = torch.from_numpy(pred_image)
+
+    ## Apply IoU
+    iou_score = wiou(noisy_image, pred_image)
+    noise_scores.append([filename, iou_score.numpy()])
+
+    print(f"[{i+1}/{len(noisy_files)}] IoU Score for {filename}: {iou_score}")
+
+## Save the results
+
+df = pd.DataFrame(noise_scores, columns=["imageid", "Noise Score"])
+
+## Order by IoU Score
+df = df.sort_values(by="Noise Score", ascending=True) 
+df["id"] = range(0, len(df))
+
+df[['id', 'imageid']].to_csv("noise_scores.csv", index=False)
+
+
+df[df["IoU Score"] == 0]

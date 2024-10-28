@@ -1,17 +1,15 @@
 import torch
 import torch.nn as nn
 import wandb
+import random
 import pathlib
 import typer
-import yaml
+
+from utils import load_config
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 from models.unet_model import UNetTeacher, UNetStudent
 from dataloader import DataCentricDataModule
 from scores import iou, dice_coefficient, precision, recall, f1_score
-
-def load_config(config_path: str):
-    with open(config_path, 'r') as file:
-        config = yaml.safe_load(file)
-    return config
 
 def student_teacher(config_path: str):
     # Load configuration from YAML file
@@ -31,8 +29,8 @@ def student_teacher(config_path: str):
     device = config["device"]
 
     # Initialize Weights & Biases
-    wandb.init(project=config["wandb_project"], config=config, 
-               name=config["experiment_name"])
+    wandb.init(project=config["trainer"]["wandb_project"], config=config, 
+               name=config["trainer"]["experiment_name"])
 
     teacher = UNetTeacher(n_channels=3, n_classes=1)  # Pre-trained Teacher model
     teacher.load_state_dict(torch.load("checkpoints/teacher_best_model.pth"))
@@ -58,9 +56,11 @@ def student_teacher(config_path: str):
 
     # Optimizer and Loss Functions
     optimizer = torch.optim.Adam(student.parameters(), lr=lr)
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3)
 
     criterion_ce = nn.BCEWithLogitsLoss().to(device)  # Binary Cross-Entropy Loss for binary segmentation
-    criterion_mse = nn.MSELoss().to(device)  # Loss for feature distillation
+    # Kullback-Leibler Divergence (KLD) loss for distillation
+    criterion_kld = nn.KLDivLoss(reduction='batchmean').to(device)
 
     # Training with Distillation
     for epoch in range(epochs):
@@ -85,11 +85,11 @@ def student_teacher(config_path: str):
             s_logits, s_feature_map = student(images)
 
             # Calculate the loss using the feature maps and the logits
-            mse_loss = criterion_mse(s_feature_map, t_feature_map)
+            kld_loss = criterion_kld(s_feature_map, t_feature_map)
             loss_ce = criterion_ce(s_logits, targets)
 
             # Total loss combines the distillation and the CE loss
-            loss = alpha * mse_loss + beta * loss_ce
+            loss = alpha * kld_loss + beta * loss_ce
 
             # Backward propagation and optimization
             optimizer.zero_grad()
@@ -104,17 +104,7 @@ def student_teacher(config_path: str):
             batch_precision = precision(s_logits, targets)
             batch_recall = recall(s_logits, targets)
             batch_f1 = f1_score(s_logits, targets)
-
-            # Log results to WandB
-            wandb.log(data={
-                "Batch Loss": loss.item(),
-                "Batch IoU": batch_iou.item(),
-                "Batch Dice": batch_dice.item(),
-                "Batch Precision": batch_precision.item(),
-                "Batch Recall": batch_recall.item(),
-                "Batch F1": batch_f1.item()
-            }, step=epoch * len(train_loader) + len(train_loader))
-            
+           
             running_iou += batch_iou.item()
             running_dice += batch_dice.item()
             running_precision += batch_precision.item()
@@ -133,12 +123,12 @@ def student_teacher(config_path: str):
 
         # Log epoch metrics to WandB
         wandb.log({
-            "Epoch CE + MSE Loss": epoch_loss,
-            "Epoch IoU": epoch_iou,
-            "Epoch Dice": epoch_dice,
-            "Epoch Precision": epoch_precision,
-            "Epoch Recall": epoch_recall,
-            "Epoch F1": epoch_f1
+            "Train CE + KLD Loss": epoch_loss,
+            "Train IoU": epoch_iou,
+            "Train Dice": epoch_dice,
+            "Train Precision": epoch_precision,
+            "Train Recall": epoch_recall,
+            "Train F1": epoch_f1
         })
 
         # Validation phase
@@ -173,7 +163,7 @@ def student_teacher(config_path: str):
         val_recall /= len(val_loader)
         val_f1 /= len(val_loader)
 
-        print(f"Validation Loss: {val_loss:.4f}",
+        print(f"Validation CE + KLD Loss: {val_loss:.4f}",
               f"Validation IoU: {val_iou:.4f}",
               f"Validation Dice: {val_dice:.4f}",
               f"Validation Precision: {val_precision:.4f}",
@@ -182,7 +172,7 @@ def student_teacher(config_path: str):
 
         # Log validation metrics to WandB
         wandb.log({
-            "Validation Loss": val_loss,
+            "Validation CE + KLD Loss": val_loss,
             "Validation IoU": val_iou,
             "Validation Dice": val_dice,
             "Validation Precision": val_precision,
@@ -190,6 +180,42 @@ def student_teacher(config_path: str):
             "Validation F1": val_f1
         })
 
+        if (epoch + 1) % 5 == 0:
+            with torch.no_grad():
+                # Obtén un lote de validación y pasa las imágenes por el modelo
+                sample_images, sample_masks = next(iter(val_loader))
+                sample_images, sample_masks = sample_images.to(device), sample_masks.to(device)
+                sample_outputs, _ = student(sample_images)
+                sample_outputs = torch.sigmoid(sample_outputs)  # Convertir logits a probabilidades
+                sample_outputs = (sample_outputs > 0.5).float()  # Binarizar predicciones
+
+                # Seleccionar una imagen aleatoria del lote
+                random_index = random.randint(0, sample_images.size(0) - 1)
+                
+                wandb.log({
+                            "Validation Example": wandb.Image(
+                                sample_images[random_index].cpu(), 
+                                caption="Image Example Kaggle",
+                                masks={
+                                    "predictions": {
+                                        "mask_data": sample_outputs[random_index][0].cpu().numpy(),
+                                        "class_labels": {0: "no building", 1: "building"}
+                                    },
+                                    "ground_truth": {
+                                        "mask_data": sample_masks[random_index][0].cpu().numpy(),
+                                        "class_labels": {0: "no building", 1: "building"}
+                                    }
+                                }
+                            )
+                        })
+
+        # Adjust learning rate based on validation loss
+        current_lr = optimizer.param_groups[0]['lr']
+        scheduler.step(val_loss)
+        new_lr = optimizer.param_groups[0]['lr']
+        
+        if new_lr != current_lr:
+            print(f"Learning rate changed to {new_lr}")
 
         # Save the best model checkpoint
         if epoch == 0:
