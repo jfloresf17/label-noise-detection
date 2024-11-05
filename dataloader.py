@@ -7,9 +7,10 @@ from torchvision import transforms
 from sklearn.model_selection import train_test_split
 
 class TeacherDataset(Dataset):
-    def __init__(self, image_paths, label_paths, normalize, mean=None, std=None):
+    def __init__(self, image_paths, label_paths, dataset, normalize, mean=None, std=None):
         self.image_paths = image_paths
         self.label_paths = label_paths
+        self.dataset = dataset
         self.normalize = normalize
         self.mean = mean
         self.std = std
@@ -42,7 +43,12 @@ class TeacherDataset(Dataset):
 
         # Convert the images to float
         image = image.astype(float)
-        label = label.astype(float) / 255.0
+        if self.dataset == 'WHU':
+            label = label.astype(float) / 255.0
+        
+        elif self.dataset == 'Alabama':
+            label = label.astype(float) / 255.0
+            label = 1 - label
 
         # Apply the transformations
         image = self.image_transforms(image).float()
@@ -51,40 +57,65 @@ class TeacherDataset(Dataset):
         return image, label
     
     
-class WHUDataModule(pl.LightningDataModule):
-    def __init__(self, file_paths, normalize, mean, std, batch_size=32, num_workers=4):
+class BuildingDataModule(pl.LightningDataModule):
+    def __init__(self, file_paths, dataset, normalize, mean, std, batch_size=32, num_workers=4):
         super().__init__()
         self.file_paths = pathlib.Path(file_paths)
         self.normalize = normalize
+        self.dataset = dataset
         self.mean = mean
         self.std = std
         self.batch_size = batch_size
         self.num_workers = num_workers
     
     def setup(self, stage=None):
-        ## From training folder
-        train_input_files = sorted(list((self.file_paths / "train/Image").glob('*.png')))
-        train_label_files = sorted(list((self.file_paths / "train/Mask").glob('*.png')))
+        train_input_files, train_label_files = [], []
+        val_input_files, val_label_files = [], []
+        test_input_files, test_label_files = [], []
         
-        ## From validation folder
-        val_input_files = sorted(list((self.file_paths / "val/Image").glob('*.png')))
-        val_label_files = sorted(list((self.file_paths / "val/Mask").glob('*.png')))
+        if self.dataset == 'WHU':
+            ## From training folder
+            train_input_files = sorted(list((self.file_paths / "train/Image").glob('*.png')))
+            train_label_files = sorted(list((self.file_paths / "train/Mask").glob('*.png')))
+            
+            ## From validation folder
+            val_input_files = sorted(list((self.file_paths / "val/Image").glob('*.png')))
+            val_label_files = sorted(list((self.file_paths / "val/Mask").glob('*.png')))
 
-        ## From test folder
-        test_input_files = sorted(list((self.file_paths / "test/Image").glob('*.png')))
-        test_label_files = sorted(list((self.file_paths / "test/Mask").glob('*.png')))
+            ## From test folder
+            test_input_files = sorted(list((self.file_paths / "test/Image").glob('*.png')))
+            test_label_files = sorted(list((self.file_paths / "test/Mask").glob('*.png')))
+        
+        elif self.dataset == 'Alabama':
+            ## Set the seed for reproducibility
+            torch.manual_seed(42)
+            
+            input_files = sorted(list((self.file_paths / "image").glob("*.png")))
+            label_files = sorted(list((self.file_paths / "mask").glob("*.png")))
+
+            ## Zip the input, label and teacher output files
+            files = list(zip(input_files, label_files))
+
+            ## Split the dataset using sklearn
+            ttrain_files, test_files = train_test_split(files, test_size=0.2, random_state=42)
+            train_files, val_files = train_test_split(ttrain_files, test_size=0.2, random_state=42)
+
+            ## Unzip the files
+            train_input_files, train_label_files = zip(*train_files)
+            val_input_files, val_label_files = zip(*val_files)
+            test_input_files, test_label_files = zip(*test_files)
     
         if stage == 'fit' or stage is None:
-            self.train_dataset = TeacherDataset(train_input_files, train_label_files, 
+            self.train_dataset = TeacherDataset(train_input_files, train_label_files, self.dataset,
                                                 normalize=self.normalize, mean=self.mean, 
                                                 std=self.std)
             
-            self.val_dataset = TeacherDataset(val_input_files, val_label_files,
+            self.val_dataset = TeacherDataset(val_input_files, val_label_files, self.dataset,
                                               normalize=self.normalize,mean=self.mean, 
                                               std=self.std)
             
         if stage == 'test' or stage == 'predict':
-            self.test_dataset = TeacherDataset(test_input_files, test_label_files,
+            self.test_dataset = TeacherDataset(test_input_files, test_label_files, self.dataset,
                                                normalize=self.normalize, mean=self.mean, 
                                                std=self.std)
         
@@ -186,7 +217,7 @@ class DataCentricDataModule(pl.LightningDataModule):
                                               self.normalize, self.mean, self.std)
         
         if stage == 'test' or stage == 'predict':
-            self.test_dataset = StudentDataset(test_input_files, test_label_files,
+            self.test_dataset = StudentDataset(test_input_files, test_label_files, 
                                                self.normalize, self.mean, self.std)
         
     def train_dataloader(self):

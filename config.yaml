@@ -11,6 +11,7 @@ data:
   batch_size: 16
   num_workers: 16  
   whu_path: "/media/tidop/Datos_4TB/databases/whu"
+  alabama_path: "/media/tidop/Datos_4TB/databases/alabama"
   datacentric_image_path: "/media/tidop/Datos_4TB/databases/kaggle/dataset/training_patches"
   label_noisy_path: "/media/tidop/Datos_4TB/databases/kaggle/dataset/training_noisy_labels"
 
@@ -18,24 +19,27 @@ data:
 Normalize: 
   apply: True
   WHU:
-    # mean: [105.7880169 , 114.63701386, 112.91447218]  # Only training
-    # std: [44.28023448, 41.85581294, 45.13255112]
-    mean: [105.34253814, 114.2284708 , 112.52936415]  # Include test and validation
-    std: [42.12451161, 39.52149692, 42.81161886]
+    mean: [105.42493013, 114.32793188, 112.61417975]  # Include train and validation
+    std: [48.52542188, 46.43975622, 49.54359915]
+  Alabama:
+    mean: [83.00301721, 91.24630964, 87.26586959]  # Include train and validation
+    std: [33.38048494, 36.60072106, 41.38057245]
+  WHU + Alabama:
+    mean: [ 94.21397367, 102.78712076,  99.94002467]  # Include train and validation
+    std: [40.95295341, 41.52023864, 45.4620858 ]
   DataCentric:
     mean: [72.74413315, 99.76137101, 82.70024275]  
     std: [36.28290664, 34.82507359, 41.48902725]
 
-
 # Knowledge distillation parameters
 knowledge_distillation:
-  alpha: 0.7  # Weight of distillation loss
-  beta: 0.3  # Weight of supervised loss with noisy labels
-
+  alpha: 0.7 # Weight of distillation loss (MSE)
+  beta: 0.3 # Weight of supervised loss with noisy labels
+  theta: 0.0 # Weight of distillation loss (Lovasz)
 # Training parameters
 trainer:
   wandb_project: "UNet-Attention-Teacher-Student-Training"  # Name of the Weights & Biases project
-  experiment_name: "Student Training"  # Name of the experiment
+  experiment_name: "Teacher Training DC ResUNet"  # Name of the experiment
   max_epochs: 20  # Maximum number of epochs
 
 

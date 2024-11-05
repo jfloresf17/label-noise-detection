@@ -2,26 +2,35 @@ import torch
 import torch.nn as nn
 import random
 import torch.optim as optim
-from torch.optim.lr_scheduler import ReduceLROnPlateau
 import wandb
 import typer
 
-# Import the UNetTeacher and WHUDataModule classes
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+from loss_function import DiceLoss
 from utils import load_config
-from models.unet_model import UNetTeacher
-from dataloader import WHUDataModule
+from torch.utils.data import ConcatDataset, DataLoader
+from models.unet_model import  ResUnetTeacher
+from dataloader import BuildingDataModule
 from scores import iou, dice_coefficient, precision, recall, f1_score
 
 def train_teacher(config_path: str):
+
     # Load configuration from YAML file
     config = load_config(config_path)
 
-    file_paths = config["data"]["whu_path"]
     normalize = config['Normalize']["apply"]
-    mean = config['Normalize']["WHU"]['mean']
-    std = config['Normalize']["WHU"]['std']
+    
+    whu_path = config["data"]["whu_path"]
+    whu_mean = config['Normalize']["WHU"]['mean']
+    whu_std = config['Normalize']["WHU"]['std']
+    
+    alabama_path = config["data"]["alabama_path"]       
+    alabama_mean = config['Normalize']["Alabama"]['mean']
+    alabama_std = config['Normalize']["Alabama"]['std']
+
     batch_size = config["data"]['batch_size']
     num_workers = config["data"]['num_workers']
+
     lr = float(config['learning_rate'])
     epochs = config["trainer"]['max_epochs']
     device = config["device"]
@@ -31,24 +40,43 @@ def train_teacher(config_path: str):
                name=config["trainer"]["experiment_name"])
 
     # Define the Teacher model
-    teacher = UNetTeacher(n_channels=3, n_classes=1)
+    teacher = ResUnetTeacher(channel=3)
     teacher = teacher.to(device)  # Use GPU if available
 
     # Define the optimizer and loss function
     optimizer = optim.Adam(teacher.parameters(), lr=lr)
-    criterion = nn.BCEWithLogitsLoss().to(device)  # For binary segmentation, we use Binary Cross Entropy with Logits
+    bce_criterion = nn.BCELoss().to(device)  # For binary segmentation, we use Binary Cross Entropy
+    criterion_dice = DiceLoss().to(device)
+
     scheduler = ReduceLROnPlateau(optimizer, # Reduce learning rate when a val loss metric has stopped improving 
                                   mode='min', # Minimize the loss
                                   factor=0.5, # Reduce the learning rate by half 
                                   patience=3 # Number of epochs with no improvement after which learning rate will be reduced 
                                   )
 
-    # Create the data module
-    data_module = WHUDataModule(file_paths, normalize, mean, std, batch_size=batch_size, num_workers=num_workers)
-    data_module.setup(stage='fit')
+    # Create the data module for WHU and Alabama datasets
+    whu_module = BuildingDataModule(whu_path, "WHU", normalize, whu_mean, whu_std, 
+                                    batch_size=batch_size, num_workers=num_workers)
+    whu_module.setup(stage='fit')
 
-    train_loader = data_module.train_dataloader()
-    val_loader = data_module.val_dataloader()
+    whu_train_dataset = whu_module.train_dataloader().dataset
+    whu_val_dataset = whu_module.val_dataloader().dataset
+
+    alabama_module = BuildingDataModule(alabama_path, "Alabama", normalize, alabama_mean, alabama_std, 
+                                        batch_size=batch_size, num_workers=num_workers)
+    alabama_module.setup(stage='fit')
+
+    alabama_train_dataset = alabama_module.train_dataloader().dataset
+    alabama_val_dataset = alabama_module.val_dataloader().dataset
+
+
+    # Concatenate the datasets for training and validation
+    combined_train_dataset = ConcatDataset([whu_train_dataset, alabama_train_dataset])
+    combined_val_dataset = ConcatDataset([whu_val_dataset, alabama_val_dataset])
+
+    # Create the data loaders
+    train_loader = DataLoader(combined_train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
+    val_loader = DataLoader(combined_val_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
     # Train the Teacher model
     teacher.train()
@@ -68,8 +96,17 @@ def train_teacher(config_path: str):
             optimizer.zero_grad()
 
             # Forward pass
-            outputs, _ = teacher(images)
-            loss = criterion(outputs, masks)
+            logits, _ = teacher(images)
+
+            # Convert to probabilities
+            outputs = torch.sigmoid(logits)
+
+            # Calculate losses (BCE + Dice)
+            bce_loss = bce_criterion(outputs, masks)
+            dice_loss = criterion_dice(outputs, masks)
+
+            ## Combine the losses
+            loss = 0.5 * bce_loss + 0.5 * dice_loss
 
             # Backward pass and optimization
             loss.backward()
@@ -122,8 +159,16 @@ def train_teacher(config_path: str):
         with torch.no_grad():
             for images, masks in val_loader:
                 images, masks = images.to(device), masks.to(device)
-                outputs, _ = teacher(images)
-                loss = criterion(outputs, masks)
+                logits, _ = teacher(images)
+
+                # Convert to probabilities
+                outputs = torch.sigmoid(logits)
+
+                # Calculate validation loss
+                bce_loss = bce_criterion(outputs, masks)
+                dice_loss = criterion_dice(outputs, masks)
+
+                loss = 0.5 * bce_loss + 0.5 * dice_loss 
 
                 val_loss += loss.item()
 
@@ -164,8 +209,7 @@ def train_teacher(config_path: str):
                 sample_images, sample_masks = next(iter(val_loader))
                 sample_images, sample_masks = sample_images.to(device), sample_masks.to(device)
                 sample_outputs, _ = teacher(sample_images)
-                sample_outputs = torch.sigmoid(sample_outputs)  # Convertir logits a probabilidades
-                sample_outputs = (sample_outputs > 0.5).float()  # Binarizar predicciones
+                sample_outputs = (torch.sigmoid(sample_outputs) > 0.5).float()  # Binarizar predicciones
 
                 # Seleccionar una imagen aleatoria del lote
                 random_index = random.randint(0, sample_images.size(0) - 1)
@@ -202,13 +246,14 @@ def train_teacher(config_path: str):
             min_val_loss = val_loss
         if val_loss < min_val_loss:
             min_val_loss = val_loss
-            torch.save(teacher.state_dict(), "checkpoints/teacher_best_model.pth")
+            torch.save(teacher.state_dict(), "checkpoints/teacher_alabama_resunet_best_model.pth")
         
 if __name__ == "__main__":
     typer.run(train_teacher)
 
 # To run the training script as a command line application in the background, use the following command:
 # nohup python train_teacher.py config.yaml > logs/teacher_training.log 2>&1 &
+# nohup python train_student.py config.yaml > logs/student_training.log 2>&1 &
 
 ## Cambiar los pesos de perdida
 ## Modificar las capas (agregar capas de convolución, atención)
