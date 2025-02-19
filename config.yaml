@@ -4,42 +4,40 @@
 device: "cuda"  # Use "cuda" for GPU or "cpu" for CPU
 
 # Model parameters
-learning_rate: 1e-4
+learning_rate: !!float 1e-4
 
 # Data parameters
 data:
   batch_size: 16
-  num_workers: 16  
-  whu_path: "/media/tidop/Datos_4TB/databases/whu"
-  alabama_path: "/media/tidop/Datos_4TB/databases/alabama"
-  datacentric_image_path: "/media/tidop/Datos_4TB/databases/kaggle/dataset/training_patches"
-  label_noisy_path: "/media/tidop/Datos_4TB/databases/kaggle/dataset/training_noisy_labels"
+  num_workers: 16
+  whu_path: "/media/tidop/Datos_4TB1/databases/whu_adjusted"
+  alabama_path: "/media/tidop/Datos_4TB1/databases/alabama"
+  datacentric_image_path: "/media/tidop/Datos_4TB1/databases/kaggle/dataset/training_patches"
+  label_noisy_path: "/media/tidop/Datos_4TB1/databases/kaggle/dataset/training_noisy_labels"
 
 # Data transformations
 Normalize: 
   apply: True
   WHU:
-    mean: [105.42493013, 114.32793188, 112.61417975]  # Include train and validation
-    std: [48.52542188, 46.43975622, 49.54359915]
+    mean: [72.62323902, 99.33869521, 82.94464024]  # Include train and validation
+    std: [43.81751311, 42.46326449, 50.62061044]
   Alabama:
     mean: [83.00301721, 91.24630964, 87.26586959]  # Include train and validation
     std: [33.38048494, 36.60072106, 41.38057245]
-  WHU + Alabama:
-    mean: [ 94.21397367, 102.78712076,  99.94002467]  # Include train and validation
-    std: [40.95295341, 41.52023864, 45.4620858 ]
   DataCentric:
     mean: [72.74413315, 99.76137101, 82.70024275]  
     std: [36.28290664, 34.82507359, 41.48902725]
 
 # Knowledge distillation parameters
-knowledge_distillation:
-  alpha: 0.7 # Weight of distillation loss (MSE)
-  beta: 0.3 # Weight of supervised loss with noisy labels
-  theta: 0.0 # Weight of distillation loss (Lovasz)
+loss:
+  alpha: 0.01 
+  beta: 1  
+  weight: 0.7 
+
 # Training parameters
 trainer:
-  wandb_project: "UNet-Attention-Teacher-Student-Training"  # Name of the Weights & Biases project
-  experiment_name: "Teacher Training DC ResUNet"  # Name of the experiment
-  max_epochs: 20  # Maximum number of epochs
+  wandb_project: "Unet-NRN-RSSEG"  # Name of the Weights & Biases project
+  experiment_name: "UnetStudent-WHU"  # Name of the experiment
+  max_epochs: 50  # Maximum number of epochs
 
 

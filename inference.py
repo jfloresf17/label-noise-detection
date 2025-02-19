@@ -2,9 +2,13 @@
 import torch
 import cv2
 import pathlib
+import pandas as pd
 
-from models.unet_model import ResUnetStudent
+
+from models.unet_model import NRNRSSEGStudent
 from torchvision import transforms
+from scores import weighted_iou as iou
+
 
 def preprocess_image_for_inference(image_path, normalize=False, mean=None, std=None):
     # Lee la imagen
@@ -26,8 +30,8 @@ def preprocess_image_for_inference(image_path, normalize=False, mean=None, std=N
 
 def inference_student(checkpoint_path, normalize, mean, std, path_to_image, threshold, output_path):
     # Load the Student model
-    student = ResUnetStudent(channel=3)
-    checkpoint = torch.load(checkpoint_path)
+    student = NRNRSSEGStudent(in_channels=3, out_channels=1, base_filters=32)
+    checkpoint = torch.load(checkpoint_path, weights_only=True)
     filter_ckpt = {k: v for k, v in checkpoint.items()}
     student.load_state_dict(filter_ckpt)
     student = student.cuda()
@@ -56,9 +60,9 @@ def inference_student(checkpoint_path, normalize, mean, std, path_to_image, thre
 
 path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/training_patches"
 image_files = sorted(list(pathlib.Path(path).glob("*.png")))
-checkpoint_path = "checkpoints/teacher_alabama_resunet_best_model.pth"
+checkpoint_path = "checkpoints/student_nrnrsseg_sce+mse.pth"
 threshold = 0.5
-output_path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/output2"
+output_path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/output"
 normalize = True
 mean = [72.74413315, 99.76137101, 82.70024275] 
 std = [36.28290664, 34.82507359, 41.48902725]
@@ -67,15 +71,10 @@ for i, image_file in enumerate(image_files):
     inference_student(checkpoint_path, normalize, mean, std, image_file, threshold, output_path)
     print(f"Processed image {i+1}/{len(image_files)}")
 
-## Apply IoU
-from scores import weighted_iou as wiou
-import torch
-import cv2
-import pathlib
-import pandas as pd
 
+## Apply IoU
 label_path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/training_noisy_labels"
-output_path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/output2"
+output_path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/output"
 noisy_files = sorted(list(pathlib.Path(label_path).glob("*.png")))
 pred_files = sorted(list(pathlib.Path(output_path).glob("*.png")))
 
@@ -90,7 +89,7 @@ for i, (noisy, pred) in enumerate(zip(noisy_files, pred_files)):
     pred_image = torch.from_numpy(pred_image)
 
     ## Apply IoU
-    iou_score = wiou(noisy_image, pred_image)
+    iou_score = iou(noisy_image, pred_image)
     noise_scores.append([filename, iou_score.numpy()])
 
     print(f"[{i+1}/{len(noisy_files)}] IoU Score for {filename}: {iou_score}")
@@ -102,8 +101,5 @@ df = pd.DataFrame(noise_scores, columns=["imageid", "Noise Score"])
 ## Order by IoU Score
 df = df.sort_values(by=["Noise Score"], ascending=False)
 df["id"] = range(0, len(df))
-
 df[['id', 'imageid']].to_csv("noise_scores.csv", index=False)
 
-
-df[df["IoU Score"] == 0]

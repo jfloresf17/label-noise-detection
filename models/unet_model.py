@@ -1,149 +1,160 @@
 
-import torch
 import torch.nn as nn
-from models.unet_parts import ResidualConv, Upsample, AttentionBlock
+from models.unet_parts import DoubleConv, Down, Up, AttentionBlock
 
 """
-__title__ = "Road Extraction by Deep Residual U-Net"
-__author__ = "Zhengxin Zhang, Qingjie Liu &  Yunhong Wang"
-__paper__ = "https://arxiv.org/pdf/1711.10684"
+__title__ = "NRN-RSSEG: A Deep Neural Network Model for Combating Label Noise in Semantic Segmentation of Remote Sensing"
+__author__ = "Xi, M., Li, J., He, Z., Yu, M., & Qin, F. (2023)"
+__paper__ = "https://doi.org/10.3390/rs15010108"
 """
 
-class ResUnetTeacher(nn.Module):
-    def __init__(self, channel, filters=[32, 64, 128, 256]):
-        super(ResUnetTeacher, self).__init__()
+class NRNRSSEGTeacher(nn.Module):
+    def __init__(self, in_channels=3, out_channels=1, base_filters=32):
+        """
+        Modified UNet Teacher with Attention Block (CBAM: Channel and Spatial Attention Blocks) 
+        concatenating the skip connections.
+        """
+        super(NRNRSSEGTeacher, self).__init__()
 
-        self.input_layer = nn.Sequential(
-            nn.Conv2d(channel, filters[0], kernel_size=3, padding=1),
-            nn.BatchNorm2d(filters[0]),
-            nn.ReLU(),
-            nn.Conv2d(filters[0], filters[0], kernel_size=3, padding=1),
-        )
-        self.input_skip = nn.Sequential(
-            nn.Conv2d(channel, filters[0], kernel_size=3, padding=1),
-            nn.BatchNorm2d(filters[0]),
-        )
+        # ENCODER 1
+        self.inc = DoubleConv(in_channels, base_filters)        # [3 -> 32]
+        self.down1 = Down(base_filters, base_filters * 2)       # [32 -> 64]
 
-        self.residual_conv_1 = ResidualConv(filters[0], filters[1], 2, 1)
-        self.residual_conv_2 = ResidualConv(filters[1], filters[2], 2, 1)
+        # ENCODER 2
+        self.down2 = Down(base_filters * 2, base_filters * 4)   # [64 -> 128]
 
-        self.bridge = ResidualConv(filters[2], filters[3], 2, 1)
+        # ENCODER 3
+        self.down3 = Down(base_filters * 4, base_filters * 8)   # [128 -> 256]
 
-        self.upsample_1 = Upsample(filters[3], filters[3], 2, 2)
-        self.attention_1 =AttentionBlock(filters[2], filters[3], filters[3])
-        self.up_residual_conv1 = ResidualConv(filters[3] + filters[2], filters[2], 1, 1)
+        # BRIDGE
+        self.bridge = DoubleConv(base_filters * 8, base_filters * 16)  # [256 -> 512]
 
-        self.upsample_2 = Upsample(filters[2], filters[2], 2, 2)
-        self.attention_2 = AttentionBlock(filters[1], filters[2], filters[2])
-        self.up_residual_conv2 = ResidualConv(filters[2] + filters[1], filters[1], 1, 1)
-
-        self.upsample_3 = Upsample(filters[1], filters[1], 2, 2)
-        self.attention_3 = AttentionBlock(filters[0], filters[1], filters[1])
-        self.up_residual_conv3 = ResidualConv(filters[1] + filters[0], filters[0], 1, 1)
-
-        self.output_layer = nn.Sequential(
-            nn.Conv2d(filters[0], 1, 1, 1)
-        )
-
-    def forward(self, x):
-        # Encode
-        d_x1 = self.input_layer(x) + self.input_skip(x)
-        d_x2 = self.residual_conv_1(d_x1)
-        d_x3 = self.residual_conv_2(d_x2)
-        
-        # Bridge
-        d_x4 = self.bridge(d_x3)
-
-
-        # Decode
-        u_x4 = self.upsample_1(d_x4)
-        a_x3 = self.attention_1(d_x3, u_x4)
-        c_x3 = torch.cat([a_x3, d_x3], dim=1)
-
-        r_x5 = self.up_residual_conv1(c_x3)
-
-        u_x2 = self.upsample_2(r_x5)
-        a_x2 = self.attention_2(d_x2, u_x2)
-        c_x2 = torch.cat([a_x2, d_x2], dim=1)
-
-        r_x6 = self.up_residual_conv2(c_x2)
-
-        u_x1 = self.upsample_3(r_x6)
-        a_x1 = self.attention_3(d_x1, u_x1)
-        c_x1 = torch.cat([a_x1, d_x1], dim=1)
-
-        r_x7 = self.up_residual_conv3(c_x1)
-
-        output = self.output_layer(r_x7)
-
-        return output, d_x4
-
-
-class ResUnetStudent(nn.Module):
-    def __init__(self, channel, filters=[32, 64, 128, 256]):
-        super(ResUnetStudent, self).__init__()
-
-        self.input_layer = nn.Sequential(
-            nn.Conv2d(channel, filters[0], kernel_size=3, padding=1),
-            nn.BatchNorm2d(filters[0]),
-            nn.ReLU(),
-            nn.Conv2d(filters[0], filters[0], kernel_size=3, padding=1),
-        )
-        self.input_skip = nn.Sequential(
-            nn.Conv2d(channel, filters[0], kernel_size=3, padding=1),
-            nn.BatchNorm2d(filters[0]),
-        )
-
-        self.residual_conv_1 = ResidualConv(filters[0], filters[1], 2, 1)
-        self.residual_conv_2 = ResidualConv(filters[1], filters[2], 2, 1)
-
-        self.bridge = ResidualConv(filters[2], filters[3], 2, 1)
-
-        self.upsample_1 = Upsample(filters[3], filters[3], 2, 2)
-        self.attention_1 =AttentionBlock(filters[2], filters[3], filters[3])
-        self.up_residual_conv1 = ResidualConv(filters[3] + filters[2], filters[2], 1, 1)
-
-        self.upsample_2 = Upsample(filters[2], filters[2], 2, 2)
-        self.attention_2 = AttentionBlock(filters[1], filters[2], filters[2])
-        self.up_residual_conv2 = ResidualConv(filters[2] + filters[1], filters[1], 1, 1)
-
-        self.upsample_3 = Upsample(filters[1], filters[1], 2, 2)
-        self.attention_3 = AttentionBlock(filters[0], filters[1], filters[1])
-        self.up_residual_conv3 = ResidualConv(filters[1] + filters[0], filters[0], 1, 1)
-
-        self.output_layer = nn.Sequential(
-            nn.Conv2d(filters[0], 1, 1, 1)
-        )
+        # DECODER 1
+        self.up1 = Up(base_filters * 16, base_filters * 8)       # [512 -> 256]
+        self.att1 = AttentionBlock(in_channels= base_filters * 8, # concat with skip=256 => total=512 -> conv->256
+                                   reduction=16, 
+                                   kernel_size=7)
+        # DECODER 2
+        self.up2 = Up(base_filters * 8, base_filters * 4)       # [256 -> 128]
+        self.att2 = AttentionBlock(in_channels= base_filters * 4, # concat with skip=128 => total=256 -> conv->128
+                                   reduction=16, 
+                                   kernel_size=7)
+        # DECODER 3
+        self.up3 = Up(base_filters * 4, base_filters * 2)       # [128 -> 64] 
+        self.att3 = AttentionBlock(in_channels= base_filters * 2, # concat with skip=128 => total=256 -> conv->128
+                                   reduction=16, 
+                                   kernel_size=7)
+        # DECODER 4
+        self.up4 = Up(base_filters * 2, base_filters)           # [64 -> 32] 
+        self.att4 = AttentionBlock(in_channels= base_filters,  # concat with skip=64 => total=128 -> conv->64
+                                   reduction=16, 
+                                   kernel_size=7)
+        # OUTPUT
+        self.outc = nn.Conv2d(base_filters, out_channels, kernel_size=1)
 
     def forward(self, x):
-        # Encode
-        d_x1 = self.input_layer(x) + self.input_skip(x)
-        d_x2 = self.residual_conv_1(d_x1)
-        d_x3 = self.residual_conv_2(d_x2)
+        # ====== ENCODER ======
+        x1 = self.inc(x)        # [B, 32,  H, W]
+        x2 = self.down1(x1)     # [B, 64,  H/2, W/2]
+        x3 = self.down2(x2)     # [B, 128, H/4, W/4]
+        x4 = self.down3(x3)     # [B, 256, H/8, W/8]
+        x5 = self.bridge(x4)    # [B, 512, H/16, W/16]
         
-        # Bridge
-        d_x4 = self.bridge(d_x3)
+        # 1) up1
+        up1_att = self.att1(x4)       # [B, 256, H/8, W/8]
+        up1 = self.up1(x5, up1_att)         # [B, 256, H/8, W/8]
+              
+
+        # 2) up2
+        up2_att = self.att2(x3)        # [B, 128, H/4, W/4]
+        up2 = self.up2(up1, up2_att)    # [B, 128, H/4, W/4]
+              
+
+        # 3) up3
+        up3_att = self.att3(x2)        # [B, 64, H/2, W/2]
+        up3 = self.up3(up2, up3_att)    # [B, 64, H/2, W/2]
+
+        # 4) up4
+        up4_att = self.att4(x1)        # [B, 32, H, W]
+        up4 = self.up4(up3, up4_att)    # [B, 32, H, W]
+
+        # OUTPUT
+        logits = self.outc(up4)    # [B, 1, H, W]
+        
+        return logits, x5
 
 
-        # Decode
-        u_x4 = self.upsample_1(d_x4)
-        a_x3 = self.attention_1(d_x3, u_x4)
-        c_x3 = torch.cat([a_x3, d_x3], dim=1)
 
-        r_x5 = self.up_residual_conv1(c_x3)
+class NRNRSSEGStudent(nn.Module):
+    def __init__(self, in_channels=3, out_channels=1, base_filters=32):
+        """
+        Ejemplo simple de U-Net con 4 niveles + CBAM en los bloques de decodificación.
+        """
+        super(NRNRSSEGStudent, self).__init__()
 
-        u_x2 = self.upsample_2(r_x5)
-        a_x2 = self.attention_2(d_x2, u_x2)
-        c_x2 = torch.cat([a_x2, d_x2], dim=1)
+        # ENCODER 1
+        self.inc = DoubleConv(in_channels, base_filters)        # [3 -> 32]
+        self.down1 = Down(base_filters, base_filters * 2)       # [32 -> 64]
 
-        r_x6 = self.up_residual_conv2(c_x2)
+        # ENCODER 2
+        self.down2 = Down(base_filters * 2, base_filters * 4)   # [64 -> 128]
 
-        u_x1 = self.upsample_3(r_x6)
-        a_x1 = self.attention_3(d_x1, u_x1)
-        c_x1 = torch.cat([a_x1, d_x1], dim=1)
+        # ENCODER 3
+        self.down3 = Down(base_filters * 4, base_filters * 8)   # [128 -> 256]
 
-        r_x7 = self.up_residual_conv3(c_x1)
+        # BRIDGE
+        self.bridge = DoubleConv(base_filters * 8, base_filters * 16)  # [256 -> 512]
 
-        output = self.output_layer(r_x7)
+        # DECODER 1
+        self.up1 = Up(base_filters * 16, base_filters * 8)       # [512 -> 256]
+        self.att1 = AttentionBlock(in_channels= base_filters * 8, # concat with skip=256 => total=512 -> conv->256
+                                   reduction=16, 
+                                   kernel_size=7)
+        # DECODER 2
+        self.up2 = Up(base_filters * 8, base_filters * 4)       # [256 -> 128]
+        self.att2 = AttentionBlock(in_channels= base_filters * 4, # concat with skip=128 => total=256 -> conv->128
+                                   reduction=16, 
+                                   kernel_size=7)
+        # DECODER 3
+        self.up3 = Up(base_filters * 4, base_filters * 2)       # [128 -> 64] 
+        self.att3 = AttentionBlock(in_channels= base_filters * 2, # concat with skip=128 => total=256 -> conv->128
+                                   reduction=16, 
+                                   kernel_size=7)
+        # DECODER 4
+        self.up4 = Up(base_filters * 2, base_filters)           # [64 -> 32] 
+        self.att4 = AttentionBlock(in_channels= base_filters,  # concat with skip=64 => total=128 -> conv->64
+                                   reduction=16, 
+                                   kernel_size=7)
+        # OUTPUT
+        self.outc = nn.Conv2d(base_filters, out_channels, kernel_size=1)
 
-        return output, d_x4
+    def forward(self, x):
+        # ====== ENCODER ======
+        x1 = self.inc(x)        # [B, 32,  H, W]
+        x2 = self.down1(x1)     # [B, 64,  H/2, W/2]
+        x3 = self.down2(x2)     # [B, 128, H/4, W/4]
+        x4 = self.down3(x3)     # [B, 256, H/8, W/8]
+        x5 = self.bridge(x4)    # [B, 512, H/16, W/16]
+        
+        # 1) up1
+        up1_att = self.att1(x4)       # [B, 256, H/8, W/8]
+        up1 = self.up1(x5, up1_att)         # [B, 256, H/8, W/8]
+              
+
+        # 2) up2
+        up2_att = self.att2(x3)        # [B, 128, H/4, W/4]
+        up2 = self.up2(up1, up2_att)    # [B, 128, H/4, W/4]
+              
+
+        # 3) up3
+        up3_att = self.att3(x2)        # [B, 64, H/2, W/2]
+        up3 = self.up3(up2, up3_att)    # [B, 64, H/2, W/2]
+
+        # 4) up4
+        up4_att = self.att4(x1)        # [B, 32, H, W]
+        up4 = self.up4(up3, up4_att)    # [B, 32, H, W]
+
+        # OUTPUT
+        logits = self.outc(up4)    # [B, 1, H, W]
+        
+        return logits, x5

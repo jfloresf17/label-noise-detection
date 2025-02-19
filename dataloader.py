@@ -57,7 +57,7 @@ class TeacherDataset(Dataset):
         return image, label
     
     
-class BuildingDataModule(pl.LightningDataModule):
+class TeacherDataModule(pl.LightningDataModule):
     def __init__(self, file_paths, dataset, normalize, mean, std, batch_size=32, num_workers=4):
         super().__init__()
         self.file_paths = pathlib.Path(file_paths)
@@ -69,10 +69,6 @@ class BuildingDataModule(pl.LightningDataModule):
         self.num_workers = num_workers
     
     def setup(self, stage=None):
-        train_input_files, train_label_files = [], []
-        val_input_files, val_label_files = [], []
-        test_input_files, test_label_files = [], []
-        
         if self.dataset == 'WHU':
             ## From training folder
             train_input_files = sorted(list((self.file_paths / "train/Image").glob('*.png')))
@@ -104,7 +100,8 @@ class BuildingDataModule(pl.LightningDataModule):
             train_input_files, train_label_files = zip(*train_files)
             val_input_files, val_label_files = zip(*val_files)
             test_input_files, test_label_files = zip(*test_files)
-    
+
+
         if stage == 'fit' or stage is None:
             self.train_dataset = TeacherDataset(train_input_files, train_label_files, self.dataset,
                                                 normalize=self.normalize, mean=self.mean, 
@@ -137,6 +134,7 @@ class BuildingDataModule(pl.LightningDataModule):
                           num_workers=self.num_workers, 
                           shuffle=False)
     
+
 
 class StudentDataset(Dataset):
     def __init__(self, image_paths, label_paths, 
@@ -181,7 +179,7 @@ class StudentDataset(Dataset):
         return image, label
 
 
-class DataCentricDataModule(pl.LightningDataModule):
+class StudentDataModule(pl.LightningDataModule):
     def __init__(self, input_files, label_files, normalize,
                  mean, std, batch_size=32, num_workers=4):
         super().__init__()

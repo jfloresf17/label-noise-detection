@@ -6,11 +6,11 @@ import pathlib
 import typer
 import numpy as np
 
-from loss_function import LovaszLossBatch
 from utils import load_config
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-from models.unet_model import ResUnetTeacher, ResUnetStudent
-from dataloader import DataCentricDataModule
+from loss_function import SCELoss
+from models.unet_model import NRNRSSEGStudent, NRNRSSEGTeacher
+from dataloader import StudentDataModule
 from scores import iou, dice_coefficient, precision, recall, f1_score
 
 def student_teacher(config_path: str):
@@ -18,6 +18,7 @@ def student_teacher(config_path: str):
     # Load configuration from YAML file
     config = load_config(config_path)
 
+    # Extract configuration parameters
     input_paths = config["data"]["datacentric_image_path"]
     label_paths = config["data"]["label_noisy_path"]
     normalize = config['Normalize']["apply"]
@@ -25,10 +26,10 @@ def student_teacher(config_path: str):
     std = config['Normalize']["DataCentric"]["std"]
     batch_size = config["data"]["batch_size"]
     num_workers = config["data"]["num_workers"]
-    lr = float(config["learning_rate"])
-    alpha = float(config["knowledge_distillation"]["alpha"])
-    beta = float(config["knowledge_distillation"]["beta"])
-    theta = float(config["knowledge_distillation"]["theta"])
+    lr = config["learning_rate"]
+    alpha = config["loss"]["alpha"]
+    beta = config["loss"]["beta"]
+    weight = config["loss"]["weight"]
     epochs = config["trainer"]["max_epochs"]
     device = config["device"]
 
@@ -36,25 +37,27 @@ def student_teacher(config_path: str):
     wandb.init(project=config["trainer"]["wandb_project"], config=config, 
                name=config["trainer"]["experiment_name"])
 
-    teacher = ResUnetTeacher(channel=3)  # Teacher model
-    teacher.load_state_dict(torch.load("checkpoints/teacher_alabama_resunet_best_model.pth"))
+    # Initialize teacher model and load pre-trained weights
+    teacher = NRNRSSEGTeacher(in_channels=3, out_channels=1, base_filters=32)
+    teacher.load_state_dict(torch.load("checkpoints/teacher_nrnrsseg_sce.pth", weights_only=True))
     teacher.to(device)
-    student = ResUnetStudent(channel=3).to(device)  # Student model
+
+    # Initialize student model
+    student = NRNRSSEGStudent(in_channels=3, out_channels=1, base_filters=32).to(device)
 
     # Create the data module
     input_files = sorted(list(pathlib.Path(input_paths).glob("*.png")))
     label_files = sorted(list(pathlib.Path(label_paths).glob("*.png")))
                          
-    data_module = DataCentricDataModule(input_files, label_files, normalize, mean, 
-                                        std, batch_size=batch_size, 
-                                        num_workers=num_workers)
+    data_module = StudentDataModule(input_files, label_files, normalize, mean, 
+                                    std, batch_size=batch_size, 
+                                    num_workers=num_workers)
     data_module.setup(stage='fit')
 
     train_loader = data_module.train_dataloader()
     val_loader = data_module.val_dataloader()
     
-
-    # The teacher is set to evaluation mode and its parameters are frozen
+    # Set teacher model to evaluation mode and freeze its parameters
     teacher.eval()
     for param in teacher.parameters():
         param.requires_grad = False
@@ -63,10 +66,11 @@ def student_teacher(config_path: str):
     optimizer = torch.optim.Adam(student.parameters(), lr=lr)
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3)
 
-    criterion_ce = nn.BCELoss().to(device)  # Binary Cross-Entropy Loss for binary segmentation
-    
     # MSE loss for distillation
-    criterion_mse = nn.MSELoss().to(device)
+    criterion_mse = nn.MSELoss()
+
+    # SCE loss for distillation
+    criterion_sce = SCELoss(alpha=alpha, beta=beta)
 
     # Training with Distillation
     for epoch in range(epochs):
@@ -86,28 +90,21 @@ def student_teacher(config_path: str):
 
             # Forward pass for Teacher
             with torch.no_grad():
-                t_logits, t_feature_map = teacher(images)
+                _, t_feature_map = teacher(images)
 
             s_logits, s_feature_map = student(images)
 
             # Calculate the loss using the feature maps: student and teacher
-            mse_loss = criterion_mse(s_feature_map, t_feature_map)
+            loss1 = criterion_mse(s_feature_map, t_feature_map)
 
-            # Calculate the Lovasz loss: student logits and teacher hard labels
-            t_hard_label = t_logits.float()  # Binarize the logits
-            lovasz_l = LovaszLossBatch(s_logits, t_hard_label)
-
-            # Calculate the Cross-Entropy loss
+            # Calculate the loss using the logits
             s_prob = torch.sigmoid(s_logits)
-            bce_loss =  criterion_ce(s_prob, targets)
 
-            # Calculate the loss using the feature maps and the logits
-            # loss_ce = criterion_ce(s_logits, targets)
+            # Calculate the Cross-Entropy loss           
+            loss2 = criterion_sce(s_prob, targets)
 
-            # mse_loss = torch.sum(s_logits  * (t_logits.log() - s_logits.log()))/ s_logits.size()[0] * 4          
-
-            # Total loss combines the distillation and the CE loss
-            loss = alpha * mse_loss + beta * bce_loss + theta * lovasz_l
+            # Combine the losses
+            loss = weight * loss1 + (1 - weight) * loss2
 
             # Backward propagation and optimization
             loss.backward()
@@ -140,7 +137,7 @@ def student_teacher(config_path: str):
 
         # Log epoch metrics to WandB
         wandb.log({
-            "Train CE + MSE Loss": epoch_loss,
+            "Train SCE + MSE Loss": epoch_loss,
             "Train IoU": epoch_iou,
             "Train Dice": epoch_dice,
             "Train Precision": epoch_precision,
@@ -164,8 +161,8 @@ def student_teacher(config_path: str):
                 prob = torch.sigmoid(logits)
 
                 # Calculate the Cross-Entropy loss
-                loss_ce = criterion_ce(prob, targets)
-                val_loss += loss_ce.item()
+                loss = criterion_sce(prob, targets)
+                val_loss += loss.item()
 
                 # Calculate validation metrics
                 val_iou += iou(prob, targets).item()
@@ -181,7 +178,7 @@ def student_teacher(config_path: str):
         val_recall /= len(val_loader)
         val_f1 /= len(val_loader)
 
-        print(f"Validation CE + MSE Loss: {val_loss:.4f}",
+        print(f"Validation SCE Loss: {val_loss:.4f}",
               f"Validation IoU: {val_iou:.4f}",
               f"Validation Dice: {val_dice:.4f}",
               f"Validation Precision: {val_precision:.4f}",
@@ -190,7 +187,7 @@ def student_teacher(config_path: str):
 
         # Log validation metrics to WandB
         wandb.log({
-            "Validation CE + MSE Loss": val_loss,
+            "Validation SCE Loss": val_loss,
             "Validation IoU": val_iou,
             "Validation Dice": val_dice,
             "Validation Precision": val_precision,
@@ -198,15 +195,16 @@ def student_teacher(config_path: str):
             "Validation F1": val_f1
         })
 
+        # Log validation example images to WandB every 5 epochs
         if (epoch + 1) % 5 == 0:
             with torch.no_grad():
-                # Obtén un lote de validación y pasa las imágenes por el modelo
+                # Get a batch of validation images and pass them through the model
                 sample_images, sample_masks = next(iter(val_loader))
                 sample_images, sample_masks = sample_images.to(device), sample_masks.to(device)
                 sample_outputs, _ = student(sample_images)
-                sample_outputs = (torch.sigmoid(sample_outputs) > 0.5).float()  # Binarizar predicciones
+                sample_outputs = (torch.sigmoid(sample_outputs) > 0.5).float()  # Binarize predictions
 
-                # Seleccionar una imagen aleatoria del lote
+                # Select a random image from the batch
                 random_index = random.randint(0, sample_images.size(0) - 1)
                 
                 wandb.log({
@@ -234,57 +232,16 @@ def student_teacher(config_path: str):
         if new_lr != current_lr:
             print(f"Learning rate changed to {new_lr}")
 
-        
         # Switch back to training mode
         student.train()
+        
         # Save the best model checkpoint (by validation IoU)
         if epoch == 0:
-            max_ioU = val_iou
-        if val_iou > max_ioU:
-            max_ioU = val_iou
-            torch.save(student.state_dict(), "checkpoints/student_resunet_best_model.pth")
-
-
-    student.load_state_dict(torch.load("checkpoints/student_resunet_best_model.pth"))
-    
-    data_module.setup(stage='test')
-    test_loader = data_module.test_dataloader()
-
-    # Función para buscar el umbral óptimo en el conjunto de prueba
-    def find_optimal_threshold(student, test_loader, device):
-        thresholds = np.arange(0.1, 1.0, 0.1)
-        best_threshold = 0.5
-        best_metric = 0.0
-
-        for threshold in thresholds:
-            metric_total = 0.0
-            count = 0
-
-            with torch.no_grad():
-                for images, targets in test_loader:
-                    images, targets = images.to(device), targets.to(device)
-                    outputs, _ = student(images)
-
-                    outputs = (outputs > threshold).float()
-                    metric_value = iou(outputs, targets).item()
-                    metric_total += metric_value
-                    count += 1
-
-            average_metric = metric_total / count
-            print(f"Threshold: {threshold}, Average IoU: {average_metric:.4f}")
-
-            if average_metric > best_metric:
-                best_metric = average_metric
-                best_threshold = threshold
-
-        print(f"Optimal Threshold: {best_threshold} with IoU: {best_metric:.4f}")
-        return best_threshold
-
-    # Cálculo del umbral óptimo al finalizar el entrenamiento
-    optimal_threshold = find_optimal_threshold(student, test_loader, device)
-    print(f"Optimal Threshold for Test Set: {optimal_threshold}")
-    
-
+            min_loss = val_loss
+        if val_loss < min_loss:
+            min_loss = val_loss
+            torch.save(student.state_dict(), "checkpoints/student_nrnrsseg_sce+mse.pth")
+            
 if __name__ == "__main__":
     typer.run(student_teacher)
 
