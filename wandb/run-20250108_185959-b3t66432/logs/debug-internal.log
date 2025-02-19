@@ -1,0 +1,16 @@
+{"time":"2025-01-08T18:59:59.551349546+01:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-08T18:59:59.551357966+01:00","level":"INFO","msg":"created symlink","path":"/home/tidop/projects/Noisy-Student/wandb/run-20250108_185959-b3t66432/logs/debug-core.log"}
+{"time":"2025-01-08T18:59:59.67931323+01:00","level":"INFO","msg":"created new stream","id":"b3t66432"}
+{"time":"2025-01-08T18:59:59.67933386+01:00","level":"INFO","msg":"stream: started","id":"b3t66432"}
+{"time":"2025-01-08T18:59:59.67937277+01:00","level":"INFO","msg":"handler: started","stream_id":{"value":"b3t66432"}}
+{"time":"2025-01-08T18:59:59.67935838+01:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"b3t66432"}}
+{"time":"2025-01-08T18:59:59.679401899+01:00","level":"INFO","msg":"sender: started","stream_id":"b3t66432"}
+{"time":"2025-01-08T18:59:59.94941178+01:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-08T19:00:04.155364953+01:00","level":"INFO","msg":"stream: closing","id":"b3t66432"}
+{"time":"2025-01-08T19:00:04.155402503+01:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-08T19:00:04.156365792+01:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-08T19:00:05.462497962+01:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-08T19:00:06.170439503+01:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"b3t66432"}}
+{"time":"2025-01-08T19:00:06.170486132+01:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"b3t66432"}}
+{"time":"2025-01-08T19:00:06.170518642+01:00","level":"INFO","msg":"sender: closed","stream_id":"b3t66432"}
+{"time":"2025-01-08T19:00:06.170538372+01:00","level":"INFO","msg":"stream: closed","id":"b3t66432"}

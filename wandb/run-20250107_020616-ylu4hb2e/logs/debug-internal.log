@@ -1,0 +1,16 @@
+{"time":"2025-01-07T02:06:16.808200217+01:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-07T02:06:16.808209517+01:00","level":"INFO","msg":"created symlink","path":"/home/tidop/projects/Noisy-Student/wandb/run-20250107_020616-ylu4hb2e/logs/debug-core.log"}
+{"time":"2025-01-07T02:06:16.910931309+01:00","level":"INFO","msg":"created new stream","id":"ylu4hb2e"}
+{"time":"2025-01-07T02:06:16.910950549+01:00","level":"INFO","msg":"stream: started","id":"ylu4hb2e"}
+{"time":"2025-01-07T02:06:16.910982018+01:00","level":"INFO","msg":"handler: started","stream_id":{"value":"ylu4hb2e"}}
+{"time":"2025-01-07T02:06:16.910965188+01:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"ylu4hb2e"}}
+{"time":"2025-01-07T02:06:16.911011098+01:00","level":"INFO","msg":"sender: started","stream_id":"ylu4hb2e"}
+{"time":"2025-01-07T02:06:17.217842732+01:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-07T02:06:20.095438895+01:00","level":"INFO","msg":"stream: closing","id":"ylu4hb2e"}
+{"time":"2025-01-07T02:06:20.095466635+01:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-07T02:06:20.0958673+01:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-07T02:06:21.567877579+01:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-07T02:06:22.208611669+01:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"ylu4hb2e"}}
+{"time":"2025-01-07T02:06:22.208658869+01:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"ylu4hb2e"}}
+{"time":"2025-01-07T02:06:22.208676029+01:00","level":"INFO","msg":"sender: closed","stream_id":"ylu4hb2e"}
+{"time":"2025-01-07T02:06:22.208697538+01:00","level":"INFO","msg":"stream: closed","id":"ylu4hb2e"}

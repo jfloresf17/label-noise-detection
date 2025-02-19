@@ -1,0 +1,16 @@
+{"time":"2025-01-13T14:05:50.332503629+01:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-13T14:05:50.332511959+01:00","level":"INFO","msg":"created symlink","path":"/home/tidop/projects/Noisy-Student/wandb/run-20250113_140550-ge0auvbl/logs/debug-core.log"}
+{"time":"2025-01-13T14:05:50.435664355+01:00","level":"INFO","msg":"created new stream","id":"ge0auvbl"}
+{"time":"2025-01-13T14:05:50.435680545+01:00","level":"INFO","msg":"stream: started","id":"ge0auvbl"}
+{"time":"2025-01-13T14:05:50.435703415+01:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"ge0auvbl"}}
+{"time":"2025-01-13T14:05:50.435732705+01:00","level":"INFO","msg":"sender: started","stream_id":"ge0auvbl"}
+{"time":"2025-01-13T14:05:50.435713675+01:00","level":"INFO","msg":"handler: started","stream_id":{"value":"ge0auvbl"}}
+{"time":"2025-01-13T14:05:50.892126961+01:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-13T14:05:58.790437886+01:00","level":"INFO","msg":"stream: closing","id":"ge0auvbl"}
+{"time":"2025-01-13T14:05:58.790454826+01:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-13T14:05:58.790868912+01:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-13T14:05:59.727062341+01:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-13T14:06:00.103177166+01:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"ge0auvbl"}}
+{"time":"2025-01-13T14:06:00.103220076+01:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"ge0auvbl"}}
+{"time":"2025-01-13T14:06:00.103241086+01:00","level":"INFO","msg":"sender: closed","stream_id":"ge0auvbl"}
+{"time":"2025-01-13T14:06:00.103291725+01:00","level":"INFO","msg":"stream: closed","id":"ge0auvbl"}

@@ -1,0 +1,85 @@
+2025-01-07 18:58:11,156 INFO    MainThread:2824630 [wandb_setup.py:_flush():79] Current SDK version is 0.18.5
+2025-01-07 18:58:11,156 INFO    MainThread:2824630 [wandb_setup.py:_flush():79] Configure stats pid to 2824630
+2025-01-07 18:58:11,156 INFO    MainThread:2824630 [wandb_setup.py:_flush():79] Loading settings from /home/tidop/.config/wandb/settings
+2025-01-07 18:58:11,156 INFO    MainThread:2824630 [wandb_setup.py:_flush():79] Loading settings from /home/tidop/projects/Noisy-Student/wandb/settings
+2025-01-07 18:58:11,156 INFO    MainThread:2824630 [wandb_setup.py:_flush():79] Loading settings from environment variables: {}
+2025-01-07 18:58:11,157 INFO    MainThread:2824630 [wandb_setup.py:_flush():79] Applying setup settings: {'mode': None, '_disable_service': None}
+2025-01-07 18:58:11,157 INFO    MainThread:2824630 [wandb_setup.py:_flush():79] Inferring run settings from compute environment: {'program_relpath': 'train_teacher.py', 'program_abspath': '/home/tidop/projects/Noisy-Student/train_teacher.py', 'program': '/home/tidop/projects/Noisy-Student/train_teacher.py'}
+2025-01-07 18:58:11,157 INFO    MainThread:2824630 [wandb_setup.py:_flush():79] Applying login settings: {}
+2025-01-07 18:58:11,157 INFO    MainThread:2824630 [wandb_init.py:_log_setup():534] Logging user logs to /home/tidop/projects/Noisy-Student/wandb/run-20250107_185811-nzbjkn2g/logs/debug.log
+2025-01-07 18:58:11,157 INFO    MainThread:2824630 [wandb_init.py:_log_setup():535] Logging internal logs to /home/tidop/projects/Noisy-Student/wandb/run-20250107_185811-nzbjkn2g/logs/debug-internal.log
+2025-01-07 18:58:11,157 INFO    MainThread:2824630 [wandb_init.py:init():621] calling init triggers
+2025-01-07 18:58:11,157 INFO    MainThread:2824630 [wandb_init.py:init():628] wandb.init called with sweep_config: {}
+config: {'device': 'cuda', 'learning_rate': '1e-4', 'data': {'batch_size': 16, 'num_workers': 16, 'whu_path': '/media/tidop/Datos_4TB1/databases/whu_adjusted', 'alabama_path': '/media/tidop/Datos_4TB1/databases/alabama', 'datacentric_image_path': '/media/tidop/Datos_4TB1/databases/kaggle/dataset/training_patches', 'label_noisy_path': '/media/tidop/Datos_4TB1/databases/kaggle/dataset/training_noisy_labels'}, 'Normalize': {'apply': True, 'WHU': {'mean': [72.62323902, 99.33869521, 82.94464024], 'std': [43.81751311, 42.46326449, 50.62061044]}, 'Alabama': {'mean': [83.00301721, 91.24630964, 87.26586959], 'std': [33.38048494, 36.60072106, 41.38057245]}, 'WHU + Alabama': {'mean': [94.21397367, 102.78712076, 99.94002467], 'std': [40.95295341, 41.52023864, 45.4620858]}, 'DataCentric': {'mean': [72.74413315, 99.76137101, 82.70024275], 'std': [36.28290664, 34.82507359, 41.48902725]}}, 'loss': {'alpha': 0.01, 'beta': 1}, 'trainer': {'wandb_project': 'Unet-NRN-RSSEG', 'experiment_name': 'Unet-WHU-Kaggle', 'max_epochs': 50}}
+2025-01-07 18:58:11,157 INFO    MainThread:2824630 [wandb_init.py:init():671] starting backend
+2025-01-07 18:58:11,157 INFO    MainThread:2824630 [wandb_init.py:init():675] sending inform_init request
+2025-01-07 18:58:11,157 INFO    MainThread:2824630 [backend.py:_multiprocessing_setup():104] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2025-01-07 18:58:11,157 INFO    MainThread:2824630 [wandb_init.py:init():688] backend started and connected
+2025-01-07 18:58:11,159 INFO    MainThread:2824630 [wandb_init.py:init():783] updated telemetry
+2025-01-07 18:58:11,161 INFO    MainThread:2824630 [wandb_init.py:init():816] communicating run to backend with 90.0 second timeout
+2025-01-07 18:58:39,350 INFO    Thread-1 (wrapped_target):2824630 [retry.py:__call__():172] Retry attempt failed:
+Traceback (most recent call last):
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/urllib3/connection.py", line 196, in _new_conn
+    sock = connection.create_connection(
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/socket.py", line 955, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+socket.gaierror: [Errno -3] Temporary failure in name resolution
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/urllib3/connectionpool.py", line 789, in urlopen
+    response = self._make_request(
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/urllib3/connectionpool.py", line 490, in _make_request
+    raise new_e
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/urllib3/connectionpool.py", line 466, in _make_request
+    self._validate_conn(conn)
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/urllib3/connectionpool.py", line 1095, in _validate_conn
+    conn.connect()
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/urllib3/connection.py", line 615, in connect
+    self.sock = sock = self._new_conn()
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/urllib3/connection.py", line 203, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPSConnection object at 0x7b9695143670>: Failed to resolve 'api.wandb.ai' ([Errno -3] Temporary failure in name resolution)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/requests/adapters.py", line 667, in send
+    resp = conn.urlopen(
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/urllib3/connectionpool.py", line 843, in urlopen
+    retries = retries.increment(
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/urllib3/util/retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='api.wandb.ai', port=443): Max retries exceeded with url: /graphql (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x7b9695143670>: Failed to resolve 'api.wandb.ai' ([Errno -3] Temporary failure in name resolution)"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/wandb/sdk/lib/retry.py", line 131, in __call__
+    result = self._call_fn(*args, **kwargs)
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/wandb/sdk/internal/internal_api.py", line 354, in execute
+    return self.client.execute(*args, **kwargs)  # type: ignore
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/client.py", line 52, in execute
+    result = self._get_result(document, *args, **kwargs)
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/client.py", line 60, in _get_result
+    return self.transport.execute(document, *args, **kwargs)
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/wandb/sdk/lib/gql_request.py", line 58, in execute
+    request = self.session.post(self.url, **post_args)
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/requests/sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/tidop/Documentos/miniconda3/envs/deep/lib/python3.10/site-packages/requests/adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='api.wandb.ai', port=443): Max retries exceeded with url: /graphql (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x7b9695143670>: Failed to resolve 'api.wandb.ai' ([Errno -3] Temporary failure in name resolution)"))
+2025-01-07 18:59:34,179 INFO    MainThread:2824630 [wandb_init.py:init():867] starting run threads in backend
+2025-01-07 18:59:34,270 INFO    MainThread:2824630 [wandb_run.py:_console_start():2463] atexit reg
+2025-01-07 18:59:34,270 INFO    MainThread:2824630 [wandb_run.py:_redirect():2311] redirect: wrap_raw
+2025-01-07 18:59:34,271 INFO    MainThread:2824630 [wandb_run.py:_redirect():2376] Wrapping output streams.
+2025-01-07 18:59:34,271 INFO    MainThread:2824630 [wandb_run.py:_redirect():2401] Redirects installed.
+2025-01-07 18:59:34,271 INFO    MainThread:2824630 [wandb_init.py:init():911] run started, returning control to user process

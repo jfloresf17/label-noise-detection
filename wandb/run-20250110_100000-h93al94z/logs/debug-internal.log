@@ -1,0 +1,16 @@
+{"time":"2025-01-10T10:00:00.971479867+01:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-10T10:00:00.971486697+01:00","level":"INFO","msg":"created symlink","path":"/home/tidop/projects/Noisy-Student/wandb/run-20250110_100000-h93al94z/logs/debug-core.log"}
+{"time":"2025-01-10T10:00:01.074365872+01:00","level":"INFO","msg":"created new stream","id":"h93al94z"}
+{"time":"2025-01-10T10:00:01.074378702+01:00","level":"INFO","msg":"stream: started","id":"h93al94z"}
+{"time":"2025-01-10T10:00:01.074390062+01:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"h93al94z"}}
+{"time":"2025-01-10T10:00:01.074392722+01:00","level":"INFO","msg":"handler: started","stream_id":{"value":"h93al94z"}}
+{"time":"2025-01-10T10:00:01.074460351+01:00","level":"INFO","msg":"sender: started","stream_id":"h93al94z"}
+{"time":"2025-01-10T10:00:01.403644351+01:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-10T11:18:08.964342878+01:00","level":"INFO","msg":"stream: closing","id":"h93al94z"}
+{"time":"2025-01-10T11:18:08.964356087+01:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-10T11:18:08.964647345+01:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-10T11:18:09.629624438+01:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-10T11:18:09.841384918+01:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"h93al94z"}}
+{"time":"2025-01-10T11:18:09.841426117+01:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"h93al94z"}}
+{"time":"2025-01-10T11:18:09.841440847+01:00","level":"INFO","msg":"sender: closed","stream_id":"h93al94z"}
+{"time":"2025-01-10T11:18:09.841477197+01:00","level":"INFO","msg":"stream: closed","id":"h93al94z"}

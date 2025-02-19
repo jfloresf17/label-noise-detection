@@ -1,0 +1,93 @@
+_wandb:
+    value:
+        cli_version: 0.18.5
+        m: []
+        python_version: 3.10.14
+        t:
+            "1":
+                - 1
+                - 5
+                - 9
+                - 41
+                - 53
+                - 55
+                - 103
+            "2":
+                - 1
+                - 5
+                - 9
+                - 41
+                - 53
+                - 55
+                - 103
+            "3":
+                - 13
+                - 16
+                - 23
+                - 55
+            "4": 3.10.14
+            "5": 0.18.5
+            "8":
+                - 5
+            "12": 0.18.5
+            "13": linux-x86_64
+Normalize:
+    value:
+        Alabama:
+            mean:
+                - 83.00301721
+                - 91.24630964
+                - 87.26586959
+            std:
+                - 33.38048494
+                - 36.60072106
+                - 41.38057245
+        DataCentric:
+            mean:
+                - 72.74413315
+                - 99.76137101
+                - 82.70024275
+            std:
+                - 36.28290664
+                - 34.82507359
+                - 41.48902725
+        WHU:
+            mean:
+                - 72.62323902
+                - 99.33869521
+                - 82.94464024
+            std:
+                - 43.81751311
+                - 42.46326449
+                - 50.62061044
+        WHU + Alabama:
+            mean:
+                - 94.21397367
+                - 102.78712076
+                - 99.94002467
+            std:
+                - 40.95295341
+                - 41.52023864
+                - 45.4620858
+        apply: true
+data:
+    value:
+        alabama_path: /media/tidop/Datos_4TB1/databases/alabama
+        batch_size: 16
+        datacentric_image_path: /media/tidop/Datos_4TB1/databases/kaggle/dataset/training_patches
+        label_noisy_path: /media/tidop/Datos_4TB1/databases/kaggle/dataset/training_noisy_labels
+        num_workers: 16
+        whu_path: /media/tidop/Datos_4TB1/databases/whu_adjusted
+device:
+    value: cuda
+learning_rate:
+    value: "1e-4"
+loss:
+    value:
+        alpha: 0.01
+        beta: 1
+trainer:
+    value:
+        experiment_name: Unet-WHU-Kaggle
+        max_epochs: 50
+        wandb_project: Unet-NRN-RSSEG

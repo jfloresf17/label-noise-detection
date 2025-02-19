@@ -1,0 +1,8 @@
+{"time":"2025-01-07T03:24:26.238127294+01:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-07T03:24:26.238136884+01:00","level":"INFO","msg":"created symlink","path":"/home/tidop/projects/Noisy-Student/wandb/run-20250107_032426-itxufwal/logs/debug-core.log"}
+{"time":"2025-01-07T03:24:26.341133553+01:00","level":"INFO","msg":"created new stream","id":"itxufwal"}
+{"time":"2025-01-07T03:24:26.341153183+01:00","level":"INFO","msg":"stream: started","id":"itxufwal"}
+{"time":"2025-01-07T03:24:26.341195442+01:00","level":"INFO","msg":"sender: started","stream_id":"itxufwal"}
+{"time":"2025-01-07T03:24:26.341184052+01:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"itxufwal"}}
+{"time":"2025-01-07T03:24:26.341215662+01:00","level":"INFO","msg":"handler: started","stream_id":{"value":"itxufwal"}}
+{"time":"2025-01-07T03:24:26.732248704+01:00","level":"INFO","msg":"Starting system monitor"}

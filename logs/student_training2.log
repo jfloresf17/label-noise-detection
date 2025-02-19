@@ -1,0 +1,115 @@
+nohup: no se tendrá en cuenta la entrada
+wandb: Using wandb-core as the SDK backend. Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: jfphlorecti (scigeo). Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.18.5
+wandb: Run data is saved locally in /home/tidop/projects/Noisy-Student/wandb/run-20250110_130441-id371xqh
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run Unet-WHU
+wandb: ⭐️ View project at https://wandb.ai/scigeo/Unet-NRN-RSSEG
+wandb: 🚀 View run at https://wandb.ai/scigeo/Unet-NRN-RSSEG/runs/id371xqh
+Epoch [1/50], CE + MSE Loss: 0.3695
+Validation CE + MSE Loss: 0.6869 Validation IoU: 0.3690 Validation Dice: 0.5352 Validation Precision: 0.5190 Validation Recall: 0.5653 Validation F1: 0.5352
+Epoch [2/50], CE + MSE Loss: 0.3151
+Validation CE + MSE Loss: 0.6678 Validation IoU: 0.4053 Validation Dice: 0.5735 Validation Precision: 0.5850 Validation Recall: 0.5744 Validation F1: 0.5735
+Epoch [3/50], CE + MSE Loss: 0.2982
+Validation CE + MSE Loss: 0.6531 Validation IoU: 0.4028 Validation Dice: 0.5703 Validation Precision: 0.6279 Validation Recall: 0.5324 Validation F1: 0.5703
+Epoch [4/50], CE + MSE Loss: 0.2867
+Validation CE + MSE Loss: 0.6397 Validation IoU: 0.4056 Validation Dice: 0.5723 Validation Precision: 0.7006 Validation Recall: 0.4914 Validation F1: 0.5723
+Epoch [5/50], CE + MSE Loss: 0.2790
+Validation CE + MSE Loss: 0.6310 Validation IoU: 0.3770 Validation Dice: 0.5420 Validation Precision: 0.7192 Validation Recall: 0.4422 Validation F1: 0.5420
+Epoch [6/50], CE + MSE Loss: 0.2734
+Validation CE + MSE Loss: 0.6226 Validation IoU: 0.4285 Validation Dice: 0.5957 Validation Precision: 0.6852 Validation Recall: 0.5348 Validation F1: 0.5957
+Epoch [7/50], CE + MSE Loss: 0.2687
+Validation CE + MSE Loss: 0.6202 Validation IoU: 0.4037 Validation Dice: 0.5700 Validation Precision: 0.6353 Validation Recall: 0.5290 Validation F1: 0.5700
+Epoch [8/50], CE + MSE Loss: 0.2645
+Validation CE + MSE Loss: 0.6132 Validation IoU: 0.3906 Validation Dice: 0.5572 Validation Precision: 0.7273 Validation Recall: 0.4590 Validation F1: 0.5572
+Epoch [9/50], CE + MSE Loss: 0.2623
+Validation CE + MSE Loss: 0.6076 Validation IoU: 0.3866 Validation Dice: 0.5516 Validation Precision: 0.7503 Validation Recall: 0.4437 Validation F1: 0.5516
+Epoch [10/50], CE + MSE Loss: 0.2592
+Validation CE + MSE Loss: 0.6047 Validation IoU: 0.4106 Validation Dice: 0.5777 Validation Precision: 0.7453 Validation Recall: 0.4782 Validation F1: 0.5777
+Epoch [11/50], CE + MSE Loss: 0.2567
+Validation CE + MSE Loss: 0.6029 Validation IoU: 0.4100 Validation Dice: 0.5767 Validation Precision: 0.7298 Validation Recall: 0.4837 Validation F1: 0.5767
+Epoch [12/50], CE + MSE Loss: 0.2555
+Validation CE + MSE Loss: 0.6018 Validation IoU: 0.4048 Validation Dice: 0.5716 Validation Precision: 0.7201 Validation Recall: 0.4802 Validation F1: 0.5716
+Epoch [13/50], CE + MSE Loss: 0.2530
+Validation CE + MSE Loss: 0.6001 Validation IoU: 0.4293 Validation Dice: 0.5964 Validation Precision: 0.7049 Validation Recall: 0.5238 Validation F1: 0.5964
+Epoch [14/50], CE + MSE Loss: 0.2514
+Validation CE + MSE Loss: 0.5986 Validation IoU: 0.4149 Validation Dice: 0.5815 Validation Precision: 0.7299 Validation Recall: 0.4911 Validation F1: 0.5815
+Epoch [15/50], CE + MSE Loss: 0.2511
+Validation CE + MSE Loss: 0.5983 Validation IoU: 0.3022 Validation Dice: 0.4576 Validation Precision: 0.7931 Validation Recall: 0.3285 Validation F1: 0.4576
+Epoch [16/50], CE + MSE Loss: 0.2495
+Validation CE + MSE Loss: 0.5976 Validation IoU: 0.4244 Validation Dice: 0.5910 Validation Precision: 0.7032 Validation Recall: 0.5179 Validation F1: 0.5910
+Epoch [17/50], CE + MSE Loss: 0.2479
+Validation CE + MSE Loss: 0.5960 Validation IoU: 0.3631 Validation Dice: 0.5282 Validation Precision: 0.7596 Validation Recall: 0.4106 Validation F1: 0.5282
+Epoch [18/50], CE + MSE Loss: 0.2475
+Validation CE + MSE Loss: 0.5964 Validation IoU: 0.4401 Validation Dice: 0.6076 Validation Precision: 0.6856 Validation Recall: 0.5518 Validation F1: 0.6076
+Epoch [19/50], CE + MSE Loss: 0.2468
+Validation CE + MSE Loss: 0.5956 Validation IoU: 0.4174 Validation Dice: 0.5838 Validation Precision: 0.7126 Validation Recall: 0.5025 Validation F1: 0.5838
+Epoch [20/50], CE + MSE Loss: 0.2458
+Validation CE + MSE Loss: 0.5954 Validation IoU: 0.4197 Validation Dice: 0.5869 Validation Precision: 0.7118 Validation Recall: 0.5072 Validation F1: 0.5869
+Epoch [21/50], CE + MSE Loss: 0.2453
+Validation CE + MSE Loss: 0.5953 Validation IoU: 0.4202 Validation Dice: 0.5875 Validation Precision: 0.7008 Validation Recall: 0.5133 Validation F1: 0.5875
+Epoch [22/50], CE + MSE Loss: 0.2442
+Validation CE + MSE Loss: 0.5961 Validation IoU: 0.4379 Validation Dice: 0.6055 Validation Precision: 0.6671 Validation Recall: 0.5631 Validation F1: 0.6055
+Epoch [23/50], CE + MSE Loss: 0.2443
+Validation CE + MSE Loss: 0.5938 Validation IoU: 0.4035 Validation Dice: 0.5706 Validation Precision: 0.7355 Validation Recall: 0.4724 Validation F1: 0.5706
+Epoch [24/50], CE + MSE Loss: 0.2430
+Validation CE + MSE Loss: 0.5944 Validation IoU: 0.3651 Validation Dice: 0.5308 Validation Precision: 0.7395 Validation Recall: 0.4206 Validation F1: 0.5308
+Epoch [25/50], CE + MSE Loss: 0.2426
+Validation CE + MSE Loss: 0.5936 Validation IoU: 0.3663 Validation Dice: 0.5312 Validation Precision: 0.7558 Validation Recall: 0.4160 Validation F1: 0.5312
+Epoch [26/50], CE + MSE Loss: 0.2423
+Validation CE + MSE Loss: 0.5935 Validation IoU: 0.3788 Validation Dice: 0.5449 Validation Precision: 0.7451 Validation Recall: 0.4356 Validation F1: 0.5449
+Epoch [27/50], CE + MSE Loss: 0.2420
+Validation CE + MSE Loss: 0.5940 Validation IoU: 0.4054 Validation Dice: 0.5729 Validation Precision: 0.7084 Validation Recall: 0.4880 Validation F1: 0.5729
+Epoch [28/50], CE + MSE Loss: 0.2411
+Validation CE + MSE Loss: 0.5939 Validation IoU: 0.3348 Validation Dice: 0.4970 Validation Precision: 0.7548 Validation Recall: 0.3756 Validation F1: 0.4970
+Epoch [29/50], CE + MSE Loss: 0.2411
+Validation CE + MSE Loss: 0.5935 Validation IoU: 0.3971 Validation Dice: 0.5637 Validation Precision: 0.7213 Validation Recall: 0.4715 Validation F1: 0.5637
+Epoch [30/50], CE + MSE Loss: 0.2408
+Validation CE + MSE Loss: 0.5933 Validation IoU: 0.3609 Validation Dice: 0.5237 Validation Precision: 0.7544 Validation Recall: 0.4095 Validation F1: 0.5237
+Epoch [31/50], CE + MSE Loss: 0.2398
+Validation CE + MSE Loss: 0.5934 Validation IoU: 0.4172 Validation Dice: 0.5846 Validation Precision: 0.7063 Validation Recall: 0.5066 Validation F1: 0.5846
+Epoch [32/50], CE + MSE Loss: 0.2396
+Validation CE + MSE Loss: 0.5949 Validation IoU: 0.3066 Validation Dice: 0.4654 Validation Precision: 0.7333 Validation Recall: 0.3464 Validation F1: 0.4654
+Epoch [33/50], CE + MSE Loss: 0.2395
+Validation CE + MSE Loss: 0.5944 Validation IoU: 0.4258 Validation Dice: 0.5933 Validation Precision: 0.6763 Validation Recall: 0.5360 Validation F1: 0.5933
+Epoch [34/50], CE + MSE Loss: 0.2389
+Validation CE + MSE Loss: 0.5938 Validation IoU: 0.3017 Validation Dice: 0.4578 Validation Precision: 0.7802 Validation Recall: 0.3300 Validation F1: 0.4578
+Learning rate changed to 5e-05
+Epoch [35/50], CE + MSE Loss: 0.2367
+Validation CE + MSE Loss: 0.5929 Validation IoU: 0.3745 Validation Dice: 0.5398 Validation Precision: 0.7453 Validation Recall: 0.4298 Validation F1: 0.5398
+Epoch [36/50], CE + MSE Loss: 0.2360
+Validation CE + MSE Loss: 0.5932 Validation IoU: 0.4027 Validation Dice: 0.5695 Validation Precision: 0.7153 Validation Recall: 0.4808 Validation F1: 0.5695
+Epoch [37/50], CE + MSE Loss: 0.2368
+Validation CE + MSE Loss: 0.5936 Validation IoU: 0.4065 Validation Dice: 0.5739 Validation Precision: 0.7000 Validation Recall: 0.4938 Validation F1: 0.5739
+Epoch [38/50], CE + MSE Loss: 0.2358
+Validation CE + MSE Loss: 0.5929 Validation IoU: 0.3828 Validation Dice: 0.5492 Validation Precision: 0.7348 Validation Recall: 0.4450 Validation F1: 0.5492
+Epoch [39/50], CE + MSE Loss: 0.2359
+Validation CE + MSE Loss: 0.5933 Validation IoU: 0.3747 Validation Dice: 0.5403 Validation Precision: 0.7263 Validation Recall: 0.4376 Validation F1: 0.5403
+Learning rate changed to 2.5e-05
+Epoch [40/50], CE + MSE Loss: 0.2353
+Validation CE + MSE Loss: 0.5934 Validation IoU: 0.3946 Validation Dice: 0.5614 Validation Precision: 0.7122 Validation Recall: 0.4705 Validation F1: 0.5614
+Epoch [41/50], CE + MSE Loss: 0.2347
+Validation CE + MSE Loss: 0.5935 Validation IoU: 0.3836 Validation Dice: 0.5503 Validation Precision: 0.7145 Validation Recall: 0.4544 Validation F1: 0.5503
+Epoch [42/50], CE + MSE Loss: 0.2347
+Validation CE + MSE Loss: 0.5933 Validation IoU: 0.3860 Validation Dice: 0.5524 Validation Precision: 0.7201 Validation Recall: 0.4550 Validation F1: 0.5524
+Epoch [43/50], CE + MSE Loss: 0.2345
+Validation CE + MSE Loss: 0.5932 Validation IoU: 0.3830 Validation Dice: 0.5493 Validation Precision: 0.7232 Validation Recall: 0.4496 Validation F1: 0.5493
+Learning rate changed to 1.25e-05
+Epoch [44/50], CE + MSE Loss: 0.2339
+Validation CE + MSE Loss: 0.5934 Validation IoU: 0.3878 Validation Dice: 0.5545 Validation Precision: 0.7147 Validation Recall: 0.4601 Validation F1: 0.5545
+Epoch [45/50], CE + MSE Loss: 0.2338
+Validation CE + MSE Loss: 0.5935 Validation IoU: 0.3931 Validation Dice: 0.5601 Validation Precision: 0.7086 Validation Recall: 0.4702 Validation F1: 0.5601
+Epoch [46/50], CE + MSE Loss: 0.2339
+Validation CE + MSE Loss: 0.5934 Validation IoU: 0.3937 Validation Dice: 0.5607 Validation Precision: 0.7109 Validation Recall: 0.4698 Validation F1: 0.5607
+Epoch [47/50], CE + MSE Loss: 0.2329
+Validation CE + MSE Loss: 0.5937 Validation IoU: 0.3846 Validation Dice: 0.5514 Validation Precision: 0.7094 Validation Recall: 0.4579 Validation F1: 0.5514
+Learning rate changed to 6.25e-06
+Epoch [48/50], CE + MSE Loss: 0.2334
+Validation CE + MSE Loss: 0.5936 Validation IoU: 0.3922 Validation Dice: 0.5592 Validation Precision: 0.7055 Validation Recall: 0.4703 Validation F1: 0.5592
+Epoch [49/50], CE + MSE Loss: 0.2327
+Validation CE + MSE Loss: 0.5937 Validation IoU: 0.3941 Validation Dice: 0.5612 Validation Precision: 0.7036 Validation Recall: 0.4738 Validation F1: 0.5612
+Epoch [50/50], CE + MSE Loss: 0.2329
+Validation CE + MSE Loss: 0.5937 Validation IoU: 0.3923 Validation Dice: 0.5593 Validation Precision: 0.7045 Validation Recall: 0.4710 Validation F1: 0.5593
+[1;34mwandb[0m: 🚀 View run [33mUnet-WHU[0m at: [34mhttps://wandb.ai/scigeo/Unet-NRN-RSSEG/runs/id371xqh[0m
+[1;34mwandb[0m: Find logs at: [1;35mwandb/run-20250110_130441-id371xqh/logs[0m

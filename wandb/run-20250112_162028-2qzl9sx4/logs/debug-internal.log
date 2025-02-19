@@ -1,0 +1,18 @@
+{"time":"2025-01-12T16:20:28.590587867+01:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-12T16:20:28.590596657+01:00","level":"INFO","msg":"created symlink","path":"/home/tidop/projects/Noisy-Student/wandb/run-20250112_162028-2qzl9sx4/logs/debug-core.log"}
+{"time":"2025-01-12T16:20:28.693305119+01:00","level":"INFO","msg":"created new stream","id":"2qzl9sx4"}
+{"time":"2025-01-12T16:20:28.693325289+01:00","level":"INFO","msg":"stream: started","id":"2qzl9sx4"}
+{"time":"2025-01-12T16:20:28.693390378+01:00","level":"INFO","msg":"sender: started","stream_id":"2qzl9sx4"}
+{"time":"2025-01-12T16:20:28.693391958+01:00","level":"INFO","msg":"handler: started","stream_id":{"value":"2qzl9sx4"}}
+{"time":"2025-01-12T16:20:28.693383348+01:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"2qzl9sx4"}}
+{"time":"2025-01-12T16:20:29.133140949+01:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-12T16:26:07.223914779+01:00","level":"INFO","msg":"api: retrying HTTP error","status":500,"url":"https://api.wandb.ai/files/scigeo/Unet-NRN-RSSEG/2qzl9sx4/file_stream"}
+{"time":"2025-01-12T16:26:14.225955209+01:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": net/http: request canceled (Client.Timeout exceeded while awaiting headers)"}
+{"time":"2025-01-12T17:18:50.172593909+01:00","level":"INFO","msg":"stream: closing","id":"2qzl9sx4"}
+{"time":"2025-01-12T17:18:50.172611389+01:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-12T17:18:50.173054096+01:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-12T17:18:50.933263355+01:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-12T17:18:51.272764737+01:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"2qzl9sx4"}}
+{"time":"2025-01-12T17:18:51.272812237+01:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"2qzl9sx4"}}
+{"time":"2025-01-12T17:18:51.272827167+01:00","level":"INFO","msg":"sender: closed","stream_id":"2qzl9sx4"}
+{"time":"2025-01-12T17:18:51.272854767+01:00","level":"INFO","msg":"stream: closed","id":"2qzl9sx4"}

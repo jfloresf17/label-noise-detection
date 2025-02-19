@@ -1,0 +1,16 @@
+{"time":"2025-01-13T14:06:42.258639565+01:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-13T14:06:42.258646615+01:00","level":"INFO","msg":"created symlink","path":"/home/tidop/projects/Noisy-Student/wandb/run-20250113_140642-utdau0c7/logs/debug-core.log"}
+{"time":"2025-01-13T14:06:42.362233943+01:00","level":"INFO","msg":"created new stream","id":"utdau0c7"}
+{"time":"2025-01-13T14:06:42.362251482+01:00","level":"INFO","msg":"stream: started","id":"utdau0c7"}
+{"time":"2025-01-13T14:06:42.362300712+01:00","level":"INFO","msg":"sender: started","stream_id":"utdau0c7"}
+{"time":"2025-01-13T14:06:42.362265582+01:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"utdau0c7"}}
+{"time":"2025-01-13T14:06:42.362289282+01:00","level":"INFO","msg":"handler: started","stream_id":{"value":"utdau0c7"}}
+{"time":"2025-01-13T14:06:42.718737719+01:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-13T14:06:48.218240762+01:00","level":"INFO","msg":"stream: closing","id":"utdau0c7"}
+{"time":"2025-01-13T14:06:48.218257032+01:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-13T14:06:48.218635928+01:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-13T14:06:49.094880688+01:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-13T14:06:49.378882139+01:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"utdau0c7"}}
+{"time":"2025-01-13T14:06:49.378913638+01:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"utdau0c7"}}
+{"time":"2025-01-13T14:06:49.378916428+01:00","level":"INFO","msg":"sender: closed","stream_id":"utdau0c7"}
+{"time":"2025-01-13T14:06:49.378948018+01:00","level":"INFO","msg":"stream: closed","id":"utdau0c7"}

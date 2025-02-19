@@ -1,0 +1,16 @@
+{"time":"2025-01-08T22:12:32.055922365+01:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-08T22:12:32.055929264+01:00","level":"INFO","msg":"created symlink","path":"/home/tidop/projects/Noisy-Student/wandb/run-20250108_221232-gxd3dvuk/logs/debug-core.log"}
+{"time":"2025-01-08T22:12:32.159357239+01:00","level":"INFO","msg":"created new stream","id":"gxd3dvuk"}
+{"time":"2025-01-08T22:12:32.159375308+01:00","level":"INFO","msg":"stream: started","id":"gxd3dvuk"}
+{"time":"2025-01-08T22:12:32.159398078+01:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"gxd3dvuk"}}
+{"time":"2025-01-08T22:12:32.159432808+01:00","level":"INFO","msg":"sender: started","stream_id":"gxd3dvuk"}
+{"time":"2025-01-08T22:12:32.159415678+01:00","level":"INFO","msg":"handler: started","stream_id":{"value":"gxd3dvuk"}}
+{"time":"2025-01-08T22:12:32.521459572+01:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-08T23:10:33.048214741+01:00","level":"INFO","msg":"stream: closing","id":"gxd3dvuk"}
+{"time":"2025-01-08T23:10:33.04829598+01:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-08T23:10:33.048737056+01:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-08T23:10:33.697681641+01:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-08T23:10:33.906475996+01:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"gxd3dvuk"}}
+{"time":"2025-01-08T23:10:33.906513546+01:00","level":"INFO","msg":"sender: closed","stream_id":"gxd3dvuk"}
+{"time":"2025-01-08T23:10:33.906495016+01:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"gxd3dvuk"}}
+{"time":"2025-01-08T23:10:33.906563176+01:00","level":"INFO","msg":"stream: closed","id":"gxd3dvuk"}

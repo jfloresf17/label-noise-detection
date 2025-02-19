@@ -1,0 +1,16 @@
+{"time":"2025-01-08T19:10:37.009681206+01:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-08T19:10:37.009688206+01:00","level":"INFO","msg":"created symlink","path":"/home/tidop/projects/Noisy-Student/wandb/run-20250108_191037-aaqvhc5j/logs/debug-core.log"}
+{"time":"2025-01-08T19:10:37.113212293+01:00","level":"INFO","msg":"created new stream","id":"aaqvhc5j"}
+{"time":"2025-01-08T19:10:37.113231973+01:00","level":"INFO","msg":"stream: started","id":"aaqvhc5j"}
+{"time":"2025-01-08T19:10:37.113283513+01:00","level":"INFO","msg":"sender: started","stream_id":"aaqvhc5j"}
+{"time":"2025-01-08T19:10:37.113270633+01:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"aaqvhc5j"}}
+{"time":"2025-01-08T19:10:37.113283563+01:00","level":"INFO","msg":"handler: started","stream_id":{"value":"aaqvhc5j"}}
+{"time":"2025-01-08T19:10:37.438271495+01:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-08T19:10:40.636939582+01:00","level":"INFO","msg":"stream: closing","id":"aaqvhc5j"}
+{"time":"2025-01-08T19:10:40.636954232+01:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-08T19:10:40.637493346+01:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-08T19:10:42.223512724+01:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-08T19:10:42.882109608+01:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"aaqvhc5j"}}
+{"time":"2025-01-08T19:10:42.882159648+01:00","level":"INFO","msg":"sender: closed","stream_id":"aaqvhc5j"}
+{"time":"2025-01-08T19:10:42.882152358+01:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"aaqvhc5j"}}
+{"time":"2025-01-08T19:10:42.882203307+01:00","level":"INFO","msg":"stream: closed","id":"aaqvhc5j"}
