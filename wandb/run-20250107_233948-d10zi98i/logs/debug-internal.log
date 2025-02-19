@@ -1,8 +1,0 @@
-{"time":"2025-01-07T23:39:48.065685195+01:00","level":"INFO","msg":"using version","core version":"0.18.5"}
-{"time":"2025-01-07T23:39:48.065693575+01:00","level":"INFO","msg":"created symlink","path":"/home/tidop/projects/Noisy-Student/wandb/run-20250107_233948-d10zi98i/logs/debug-core.log"}
-{"time":"2025-01-07T23:39:48.168425371+01:00","level":"INFO","msg":"created new stream","id":"d10zi98i"}
-{"time":"2025-01-07T23:39:48.168446541+01:00","level":"INFO","msg":"stream: started","id":"d10zi98i"}
-{"time":"2025-01-07T23:39:48.168487681+01:00","level":"INFO","msg":"sender: started","stream_id":"d10zi98i"}
-{"time":"2025-01-07T23:39:48.168480251+01:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"d10zi98i"}}
-{"time":"2025-01-07T23:39:48.168487911+01:00","level":"INFO","msg":"handler: started","stream_id":{"value":"d10zi98i"}}
-{"time":"2025-01-07T23:39:48.435228625+01:00","level":"INFO","msg":"Starting system monitor"}

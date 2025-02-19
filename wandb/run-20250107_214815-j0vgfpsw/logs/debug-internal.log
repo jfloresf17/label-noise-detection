@@ -1,9 +1,0 @@
-{"time":"2025-01-07T21:48:15.239837636+01:00","level":"INFO","msg":"using version","core version":"0.18.5"}
-{"time":"2025-01-07T21:48:15.239847276+01:00","level":"INFO","msg":"created symlink","path":"/home/tidop/projects/Noisy-Student/wandb/run-20250107_214815-j0vgfpsw/logs/debug-core.log"}
-{"time":"2025-01-07T21:48:15.343026781+01:00","level":"INFO","msg":"created new stream","id":"j0vgfpsw"}
-{"time":"2025-01-07T21:48:15.343047421+01:00","level":"INFO","msg":"stream: started","id":"j0vgfpsw"}
-{"time":"2025-01-07T21:48:15.34311802+01:00","level":"INFO","msg":"sender: started","stream_id":"j0vgfpsw"}
-{"time":"2025-01-07T21:48:15.34309818+01:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"j0vgfpsw"}}
-{"time":"2025-01-07T21:48:15.34311933+01:00","level":"INFO","msg":"handler: started","stream_id":{"value":"j0vgfpsw"}}
-{"time":"2025-01-07T21:48:15.703411359+01:00","level":"INFO","msg":"Starting system monitor"}
-{"time":"2025-01-07T22:11:30.801362565+01:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": net/http: request canceled (Client.Timeout exceeded while awaiting headers)"}

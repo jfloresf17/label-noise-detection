@@ -1,2 +1,0 @@
-Epoch [1/50], CE + MSE Loss: 0.3677
-Validation CE + MSE Loss: 0.6782 Validation IoU: 0.3361 Validation Dice: 0.4993 Validation Precision: 0.5545 Validation Recall: 0.4641 Validation F1: 0.4993

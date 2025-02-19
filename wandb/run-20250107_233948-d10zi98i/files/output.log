@@ -1,4 +1,0 @@
-Epoch [1/50], Loss: 142940.3130
-Validation Loss: 90936.7599 Validation IoU: 0.0483 Validation Dice: 0.0895 Validation Precision: 0.7973 Validation Recall: 0.0485 Validation F1: 0.0895
-Epoch [2/50], Loss: 66877.8838
-Validation Loss: 48019.7907 Validation IoU: 0.0541 Validation Dice: 0.0996 Validation Precision: 0.8737 Validation Recall: 0.0542 Validation F1: 0.0996
