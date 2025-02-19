@@ -1,4 +1,4 @@
-# Noisy-Student for Label Noise Detection
+# Label Noise Detection
 
 This project aims to detect noise in labels from the DataCentric Kaggle dataset using a Teacher-Student network approach. The models used are modified U-Net architectures (NRN-RSSEG) with Mean Squared Error (MSE) as the distillation loss.
 
