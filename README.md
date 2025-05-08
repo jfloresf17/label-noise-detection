@@ -50,7 +50,7 @@ The `config.yaml` file contains all the necessary configuration parameters for t
 
 ## Experimentation Logs
 
-Experimentation logs, including training and validation metrics, are logged using Weights & Biases (W&B). You can view the logs and visualizations [here](https://wandb.ai/scigeo/RSSEG-UNet-Teacher-Student-Training).
+Experimentation logs, including training and validation metrics, are logged using Weights & Biases (W&B). You can view the logs and visualizations [here](https://wandb.ai/scigeo/Unet-NRN-RSSEG).
 
 ## Running the Scripts
 
