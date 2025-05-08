@@ -36,6 +36,7 @@ def train_teacher(config_path: str):
     lr = config['learning_rate']
     epochs = config["trainer"]['max_epochs']
     device = config["device"]
+    ckpt_path = config["trainer"]["ckpt_path"]
 
     # Extract loss parameters
     alpha = config["loss"]["alpha"]
@@ -237,10 +238,12 @@ def train_teacher(config_path: str):
                         })
                 
         # Early Stopping based on IoU
-        if val_loss < min_val_loss:
-            min_val_loss = val_loss
-            epochs_no_improve = 0
-            torch.save(teacher.state_dict(), "checkpoints/teacher_nrnrsseg_sce.pth")
+        # Save the best model checkpoint (by validation IoU)
+        if epoch == 0:
+            min_loss = val_loss
+        if val_loss < min_loss:
+            min_loss = val_loss
+            torch.save(teacher.state_dict(), ckpt_path)
         else:
             epochs_no_improve += 1
 

@@ -73,29 +73,29 @@ for i, image_file in enumerate(image_files):
 
 
 ## Apply IoU
-label_path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/training_noisy_labels"
-output_path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/output"
-noisy_files = sorted(list(pathlib.Path(label_path).glob("*.png")))
-pred_files = sorted(list(pathlib.Path(output_path).glob("*.png")))
+pred_path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/output"
+target_path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/training_noisy_labels"
+
+pred_files = sorted(list(pathlib.Path(pred_path).glob("*.png")))
+target_files = sorted(list(pathlib.Path(target_path).glob("*.png")))
 
 noise_scores = []
-for i, (noisy, pred) in enumerate(zip(noisy_files, pred_files)):
-    filename = noisy.name
-    noisy_image = cv2.imread(str(noisy), cv2.IMREAD_GRAYSCALE)
+for i, (pred, target) in enumerate(zip(pred_files, target_files)):
+    filename = pred.name
     pred_image = cv2.imread(str(pred), cv2.IMREAD_GRAYSCALE)
+    target_image = cv2.imread(str(target), cv2.IMREAD_GRAYSCALE)
 
     ## Flatten the images
-    noisy_image = torch.from_numpy(noisy_image)
     pred_image = torch.from_numpy(pred_image)
+    target_image = torch.from_numpy(target_image)
 
     ## Apply IoU
-    iou_score = iou(noisy_image, pred_image)
+    iou_score = iou(pred_image, target_image)
     noise_scores.append([filename, iou_score.numpy()])
 
-    print(f"[{i+1}/{len(noisy_files)}] IoU Score for {filename}: {iou_score}")
+    print(f"[{i+1}/{len(target_files)}] IoU Score for {filename}: {iou_score}")
 
 ## Save the results
-
 df = pd.DataFrame(noise_scores, columns=["imageid", "Noise Score"])
 
 ## Order by IoU Score

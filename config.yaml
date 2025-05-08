@@ -1,7 +1,7 @@
 # Configuration for training Teacher and Student Model
 
 # General configuration
-device: "cuda"  # Use "cuda" for GPU or "cpu" for CPU
+device: "cpu"  # Use "cuda" for GPU or "cpu" for CPU
 
 # Model parameters
 learning_rate: !!float 1e-4
@@ -12,8 +12,8 @@ data:
   num_workers: 16
   whu_path: "/media/tidop/Datos_4TB1/databases/whu_adjusted"
   alabama_path: "/media/tidop/Datos_4TB1/databases/alabama"
-  datacentric_image_path: "/media/tidop/Datos_4TB1/databases/kaggle/dataset/training_patches"
-  label_noisy_path: "/media/tidop/Datos_4TB1/databases/kaggle/dataset/training_noisy_labels"
+  datacentric_image_path: "/media/tidop/Datos_4TB1/databases/full_dataset/dataset/training_patches"
+  label_noisy_path: "/media/tidop/Datos_4TB1/databases/full_dataset/dataset/training_noisy_labels"
 
 # Data transformations
 Normalize: 
@@ -24,11 +24,11 @@ Normalize:
   Alabama:
     mean: [83.00301721, 91.24630964, 87.26586959]  # Include train and validation
     std: [33.38048494, 36.60072106, 41.38057245]
-  DataCentric:
+  DataCentric: # Del dataset de Kaggle
     mean: [72.74413315, 99.76137101, 82.70024275]  
     std: [36.28290664, 34.82507359, 41.48902725]
 
-# Knowledge distillation parameters
+# Knowledge distillation parameters (Only for Student)
 loss:
   alpha: 0.01 
   beta: 1  
@@ -37,7 +37,8 @@ loss:
 # Training parameters
 trainer:
   wandb_project: "Unet-NRN-RSSEG"  # Name of the Weights & Biases project
-  experiment_name: "UnetStudent-WHU"  # Name of the experiment
+  experiment_name: "TeacherStudent-WHU-Alabama"  # Name of the experiment
   max_epochs: 50  # Maximum number of epochs
+  ckpt_path: "checkpoints/teacher_nrnrsseg_sce.pth"  # Path to save checkpoints
 
 
