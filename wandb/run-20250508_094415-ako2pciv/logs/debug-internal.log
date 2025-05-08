@@ -1,0 +1,16 @@
+{"time":"2025-05-08T09:44:15.839829469+02:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-05-08T09:44:15.839836898+02:00","level":"INFO","msg":"created symlink","path":"/home/tidop/projects/Noisy-Student/wandb/run-20250508_094415-ako2pciv/logs/debug-core.log"}
+{"time":"2025-05-08T09:44:15.943397705+02:00","level":"INFO","msg":"created new stream","id":"ako2pciv"}
+{"time":"2025-05-08T09:44:15.943430154+02:00","level":"INFO","msg":"stream: started","id":"ako2pciv"}
+{"time":"2025-05-08T09:44:15.943502523+02:00","level":"INFO","msg":"sender: started","stream_id":"ako2pciv"}
+{"time":"2025-05-08T09:44:15.943471853+02:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"ako2pciv"}}
+{"time":"2025-05-08T09:44:15.943496333+02:00","level":"INFO","msg":"handler: started","stream_id":{"value":"ako2pciv"}}
+{"time":"2025-05-08T09:44:16.637779008+02:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-08T10:17:07.976983852+02:00","level":"INFO","msg":"stream: closing","id":"ako2pciv"}
+{"time":"2025-05-08T10:17:07.977000072+02:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-08T10:17:07.9772692+02:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-08T10:17:10.858377227+02:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-05-08T10:17:11.091032422+02:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"ako2pciv"}}
+{"time":"2025-05-08T10:17:11.091063932+02:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"ako2pciv"}}
+{"time":"2025-05-08T10:17:11.091095771+02:00","level":"INFO","msg":"sender: closed","stream_id":"ako2pciv"}
+{"time":"2025-05-08T10:17:11.091101991+02:00","level":"INFO","msg":"stream: closed","id":"ako2pciv"}

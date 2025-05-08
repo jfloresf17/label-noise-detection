@@ -1,0 +1,16 @@
+{"time":"2025-05-08T10:24:26.227320663+02:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-05-08T10:24:26.227327913+02:00","level":"INFO","msg":"created symlink","path":"/home/tidop/projects/Noisy-Student/wandb/run-20250508_102426-jqz28oiw/logs/debug-core.log"}
+{"time":"2025-05-08T10:24:26.330954431+02:00","level":"INFO","msg":"created new stream","id":"jqz28oiw"}
+{"time":"2025-05-08T10:24:26.330974291+02:00","level":"INFO","msg":"stream: started","id":"jqz28oiw"}
+{"time":"2025-05-08T10:24:26.330991251+02:00","level":"INFO","msg":"sender: started","stream_id":"jqz28oiw"}
+{"time":"2025-05-08T10:24:26.330986841+02:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"jqz28oiw"}}
+{"time":"2025-05-08T10:24:26.331316649+02:00","level":"INFO","msg":"handler: started","stream_id":{"value":"jqz28oiw"}}
+{"time":"2025-05-08T10:24:26.726250035+02:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-08T10:48:06.064430142+02:00","level":"INFO","msg":"stream: closing","id":"jqz28oiw"}
+{"time":"2025-05-08T10:48:06.064446372+02:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-08T10:48:06.0647704+02:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-08T10:48:08.725350912+02:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-05-08T10:48:08.986745465+02:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"jqz28oiw"}}
+{"time":"2025-05-08T10:48:08.986773425+02:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"jqz28oiw"}}
+{"time":"2025-05-08T10:48:08.986799824+02:00","level":"INFO","msg":"sender: closed","stream_id":"jqz28oiw"}
+{"time":"2025-05-08T10:48:08.986851484+02:00","level":"INFO","msg":"stream: closed","id":"jqz28oiw"}

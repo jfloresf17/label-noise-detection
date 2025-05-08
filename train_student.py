@@ -32,6 +32,8 @@ def student_teacher(config_path: str):
     weight = config["loss"]["weight"]
     epochs = config["trainer"]["max_epochs"]
     device = config["device"]
+    teacher_ckpt_path = config["trainer"]["teacher_ckpt_path"]
+    student_ckpt_path = config["trainer"]["student_ckpt_path"]
 
     # Initialize Weights & Biases
     wandb.init(project=config["trainer"]["wandb_project"], config=config, 
@@ -39,7 +41,7 @@ def student_teacher(config_path: str):
 
     # Initialize teacher model and load pre-trained weights
     teacher = NRNRSSEGTeacher(in_channels=3, out_channels=1, base_filters=32)
-    teacher.load_state_dict(torch.load("checkpoints/teacher_nrnrsseg_sce.pth", weights_only=True))
+    teacher.load_state_dict(torch.load(teacher_ckpt_path, weights_only=True))
     teacher.to(device)
 
     # Initialize student model
@@ -240,7 +242,7 @@ def student_teacher(config_path: str):
             min_loss = val_loss
         if val_loss < min_loss:
             min_loss = val_loss
-            torch.save(student.state_dict(), "checkpoints/student_nrnrsseg_sce+mse.pth")
+            torch.save(student.state_dict(),student_ckpt_path)
             
 if __name__ == "__main__":
     typer.run(student_teacher)

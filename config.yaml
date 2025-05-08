@@ -1,7 +1,7 @@
 # Configuration for training Teacher and Student Model
 
 # General configuration
-device: "cpu"  # Use "cuda" for GPU or "cpu" for CPU
+device: "cuda"  # Use "cuda" for GPU or "cpu" for CPU
 
 # Model parameters
 learning_rate: !!float 1e-4
@@ -30,15 +30,17 @@ Normalize:
 
 # Knowledge distillation parameters (Only for Student)
 loss:
-  alpha: 0.01 
+  alpha: 0.01 # For SCE lOSS
   beta: 1  
-  weight: 0.7 
+  weight: 0.2 # MSE loss weight, the rest is for SCE loss
 
 # Training parameters
 trainer:
   wandb_project: "Unet-NRN-RSSEG"  # Name of the Weights & Biases project
-  experiment_name: "TeacherStudent-WHU-Alabama"  # Name of the experiment
+  experiment_name: "Student-DataCentric"  # Name of the experiment
   max_epochs: 50  # Maximum number of epochs
-  ckpt_path: "checkpoints/teacher_nrnrsseg_sce.pth"  # Path to save checkpoints
+  teacher_ckpt_path: "checkpoints/teacher_nrnrsseg_sce.pth"  # Path to save checkpoints
+  student_ckpt_path: "checkpoints/student_nrnrsseg_sce+mse.pth"  # Path to save checkpoints
+
 
 

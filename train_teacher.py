@@ -23,9 +23,9 @@ def train_teacher(config_path: str):
     whu_path = config["data"]["whu_path"]
     whu_mean = config['Normalize']["WHU"]['mean']
     whu_std = config['Normalize']["WHU"]['std']
-    alabama_path = config["data"]["alabama_path"]       
-    alabama_mean = config['Normalize']["Alabama"]['mean']
-    alabama_std = config['Normalize']["Alabama"]['std']
+    # alabama_path = config["data"]["alabama_path"]       
+    # alabama_mean = config['Normalize']["Alabama"]['mean']
+    # alabama_std = config['Normalize']["Alabama"]['std']
     normalize = config['Normalize']["apply"]
 
     # Extract data parameters
@@ -36,7 +36,7 @@ def train_teacher(config_path: str):
     lr = config['learning_rate']
     epochs = config["trainer"]['max_epochs']
     device = config["device"]
-    ckpt_path = config["trainer"]["ckpt_path"]
+    ckpt_path = config["trainer"]["teacher_ckpt_path"]
 
     # Extract loss parameters
     alpha = config["loss"]["alpha"]
@@ -67,21 +67,21 @@ def train_teacher(config_path: str):
     whu_train_dataset = whu_module.train_dataloader().dataset
     whu_val_dataset = whu_module.val_dataloader().dataset
 
-    alabama_module = TeacherDataModule(alabama_path, "Alabama", normalize, alabama_mean, alabama_std, 
-                                        batch_size=batch_size, num_workers=num_workers)
-    alabama_module.setup(stage='fit')
+    # alabama_module = TeacherDataModule(alabama_path, "Alabama", normalize, alabama_mean, alabama_std, 
+    #                                     batch_size=batch_size, num_workers=num_workers)
+    # alabama_module.setup(stage='fit')
 
-    alabama_train_dataset = alabama_module.train_dataloader().dataset
-    alabama_val_dataset = alabama_module.val_dataloader().dataset
+    # alabama_train_dataset = alabama_module.train_dataloader().dataset
+    # alabama_val_dataset = alabama_module.val_dataloader().dataset
 
     # Concatenate the datasets for training and validation
-    combined_train_dataset = ConcatDataset([whu_train_dataset, alabama_train_dataset])
-    combined_val_dataset = ConcatDataset([whu_val_dataset, alabama_val_dataset])
+    # combined_train_dataset = ConcatDataset([whu_train_dataset, alabama_train_dataset])
+    # combined_val_dataset = ConcatDataset([whu_val_dataset, alabama_val_dataset])
 
     # Create the data loaders
-    train_loader = DataLoader(combined_train_dataset, batch_size=batch_size, shuffle=True, 
+    train_loader = DataLoader(whu_train_dataset, batch_size=batch_size, shuffle=True, 
                               num_workers=num_workers)
-    val_loader = DataLoader(combined_val_dataset, batch_size=batch_size, shuffle=False, 
+    val_loader = DataLoader(whu_val_dataset, batch_size=batch_size, shuffle=False, 
                             num_workers=num_workers)
 
     # Define the loss function

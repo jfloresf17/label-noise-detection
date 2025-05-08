@@ -58,23 +58,22 @@ def inference_student(checkpoint_path, normalize, mean, std, path_to_image, thre
     cv2.imwrite(str(output_filename), (output).astype(int))
 
 
-path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/training_patches"
+path = "/media/tidop/Datos_4TB1/databases/full_dataset/dataset/training_patches"
 image_files = sorted(list(pathlib.Path(path).glob("*.png")))
-checkpoint_path = "checkpoints/student_nrnrsseg_sce+mse.pth"
+checkpoint_path = "/home/tidop/projects/Noisy-Student/checkpoints/student_nrnrsseg_sce+mse.pth"
 threshold = 0.5
-output_path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/output"
+pred_path = "/media/tidop/Datos_4TB1/databases/full_dataset/dataset/inferenced_pred_labels"
 normalize = True
 mean = [72.74413315, 99.76137101, 82.70024275] 
 std = [36.28290664, 34.82507359, 41.48902725]
 
+
 for i, image_file in enumerate(image_files):
-    inference_student(checkpoint_path, normalize, mean, std, image_file, threshold, output_path)
+    inference_student(checkpoint_path, normalize, mean, std, image_file, threshold, pred_path)
     print(f"Processed image {i+1}/{len(image_files)}")
 
-
 ## Apply IoU
-pred_path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/output"
-target_path = "/media/tidop/Datos_4TB/databases/kaggle/dataset/training_noisy_labels"
+target_path = "/media/tidop/Datos_4TB1/databases/full_dataset/dataset/training_noisy_labels"
 
 pred_files = sorted(list(pathlib.Path(pred_path).glob("*.png")))
 target_files = sorted(list(pathlib.Path(target_path).glob("*.png")))
@@ -90,7 +89,7 @@ for i, (pred, target) in enumerate(zip(pred_files, target_files)):
     target_image = torch.from_numpy(target_image)
 
     ## Apply IoU
-    iou_score = iou(pred_image, target_image)
+    iou_score = iou(target_image, pred_image)
     noise_scores.append([filename, iou_score.numpy()])
 
     print(f"[{i+1}/{len(target_files)}] IoU Score for {filename}: {iou_score}")
@@ -102,4 +101,3 @@ df = pd.DataFrame(noise_scores, columns=["imageid", "Noise Score"])
 df = df.sort_values(by=["Noise Score"], ascending=False)
 df["id"] = range(0, len(df))
 df[['id', 'imageid']].to_csv("noise_scores.csv", index=False)
-

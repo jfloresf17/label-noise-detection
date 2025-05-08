@@ -88,6 +88,36 @@ Install the required packages using:
 pip install -r requirements.txt
 ```
 
+## Qualitative Results
+The following images show the qualitative results obtained from the validation set of the Student model (DataCentric Kaggle dataset):
+
+<p align="center">
+  <img src="assets/image_0.png" alt="Qualitative Results" width="800"/>
+</p>
+
+<p align="center">
+  <img src="assets/image_1.png" alt="Qualitative Results" width="800"/>
+</p>
+
+<p align="center">
+  <img src="assets/image_2.png" alt="Qualitative Results" width="800"/>
+</p>
+
+<p align="center">
+  <img src="assets/image_3.png" alt="Qualitative Results" width="800"/>
+</p>
+
+## Quantitative Results
+The following table summarizes the quantitative results obtained from the validation set of the Student model (DataCentric Kaggle dataset):
+
+| Metric               |              Value |
+| -------------------- | -----------------: |
+| Validation F1        | 0.576 |
+| Validation IoU       | 0.409|
+| Validation Precision | 0.740 |
+| Validation Recall    | 0.479 |
+| Validation SCE Loss  |  0.692 |
+
 ## References
 [1] "NRN-RSSEG: A Deep Neural Network Model for Combating Label Noise in Semantic Segmentation of Remote Sensing" by Xi, M., Li, J., He, Z., Yu, M., & Qin, F. (2023). [Link to the paper](https://doi.org/10.3390/rs15010108).
 

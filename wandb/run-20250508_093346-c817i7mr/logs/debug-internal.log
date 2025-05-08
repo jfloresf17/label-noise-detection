@@ -1,0 +1,9 @@
+{"time":"2025-05-08T09:33:47.236994405+02:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-05-08T09:33:47.237038675+02:00","level":"INFO","msg":"created symlink","path":"/home/tidop/projects/Noisy-Student/wandb/run-20250508_093346-c817i7mr/logs/debug-core.log"}
+{"time":"2025-05-08T09:33:47.669680747+02:00","level":"INFO","msg":"created new stream","id":"c817i7mr"}
+{"time":"2025-05-08T09:33:47.669697687+02:00","level":"INFO","msg":"stream: started","id":"c817i7mr"}
+{"time":"2025-05-08T09:33:47.669758267+02:00","level":"INFO","msg":"sender: started","stream_id":"c817i7mr"}
+{"time":"2025-05-08T09:33:47.669736647+02:00","level":"INFO","msg":"handler: started","stream_id":{"value":"c817i7mr"}}
+{"time":"2025-05-08T09:33:47.669721437+02:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"c817i7mr"}}
+{"time":"2025-05-08T09:33:48.120110744+02:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-08T09:42:48.120573395+02:00","level":"ERROR","msg":"monitor: cpu: error sampling metrics: open /proc/7625/stat: no such file or directory\nopen /proc/7625/status: no such file or directory"}
